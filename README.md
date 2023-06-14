@@ -17,3 +17,7 @@
 1. `docker compose up -d --build` でcompose起動
 1. 起動中のコンテナをvscodeにアタッチ
 1. `docker compose reload {service_name}` でコンテナ再起動
+- `localhost:80000`: nginx
+- `localhost:80001`: fastAPI
+  - `localhost:80001/docs`: Swagger (APIデバッガー)
+- `localhost:5556`: Celeryのタスクダッシュボード

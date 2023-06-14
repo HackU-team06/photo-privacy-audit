@@ -1,7 +1,7 @@
 # 内容
 ## app
 - 主にPythonアプリケーション
-- apiサーバー, バックエンドworker, 画像解析等
+- APIサーバー(fastAPI), バックエンドワーカー(Celery), 画像解析等
 ## nginx
 - nginxのconfig
 - 静的ホストとルーティング

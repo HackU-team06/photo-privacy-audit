@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, Field, UUID4, BaseModel, validator
 from pydantic.dataclasses import dataclass
-from typing import Optional, Literal, Any, Union
+from typing import Optional, Literal, Any, Union, Annotated
 from pathlib import Path
 
 
@@ -9,6 +9,8 @@ from pathlib import Path
 __all__ = [
     "AnalyzeTaskConfig",
     "AnalyzeTaskRequest",
+    "AnalyzeTaskFormRequest",
+    "AnalyzeTaskBase64Request",
     "AnalyzeTaskTaskRequestWithPath",
     "BoundingBox",
     "AnalyzeResult",
@@ -27,6 +29,8 @@ class AnalyzeTaskConfig(BaseModel):
 class AnalyzeTaskRequest(BaseModel):
     config: AnalyzeTaskConfig
 
+
+class AnalyzeTaskFormRequest(AnalyzeTaskRequest):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate_to_json
@@ -37,6 +41,9 @@ class AnalyzeTaskRequest(BaseModel):
             return cls.parse_raw(value)
         return value
 
+
+class AnalyzeTaskBase64Request(AnalyzeTaskRequest):
+    encoded_file: Annotated[str, 'Base64File']
 
 
 class AnalyzeTaskTaskRequestWithPath(AnalyzeTaskRequest):

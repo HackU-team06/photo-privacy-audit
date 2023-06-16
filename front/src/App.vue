@@ -2,20 +2,17 @@
   <div id="app">
     <h1>サービス名</h1>
     <p>
-      {{ img_file_input }}
-      {{ task_id }}
       説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
       説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
       説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
     </p>
     <label for="file_input">
       画像を選択
-      <input type="file" id="file_input" accept="image/*, " @change="setFile" />
+      <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
     </label>
     <div v-if="img_preview_url">
       <img :src="img_preview_url" id="preview_img">
     </div>
-    <!-- 解析中のローディングgifを挿入してくれ〜 -->
     <button @click="uploadFile">アップロードする</button>
     <button @click="analyze">解析する</button>
   </div>
@@ -86,8 +83,9 @@ export default {
           if (response.data.status == "SUCCESS") {
             this.isAnalysisComplete = true
             this.detected_objects = response.data.result
-            console.log(response)
             console.log(response.data.result)
+          } else if (response.data.status == "PENDING") {
+            console.log("解析中。。。")
           }
         }
       } catch (e) {

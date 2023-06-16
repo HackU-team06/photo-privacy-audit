@@ -62,6 +62,17 @@ services:
     volumes:
       - celery_redis:/data
 
+  front:
+    build:
+      context: ./front
+      dockerfile: front.dockerfile
+    ports:
+      - 80:8080
+    restart: always
+    tty: true
+    volumes:
+      - ./front:/front
+
 volumes:
   celery_redis:
     driver: local

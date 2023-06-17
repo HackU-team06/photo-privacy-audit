@@ -64,7 +64,6 @@ export default {
           "Content-Type": "multipart/form-data"
         }
       }
-      // fastAPIを叩く
       try {
         const response = await axios.post("http://localhost:8001/api/analyze", formData, config)
         if (response.status == 200) {
@@ -76,21 +75,36 @@ export default {
       }
     },
     async analyze() {
-      // fastAPIを叩く
-      try {
-        const response = await axios.get("http://localhost:8001/api/analyze/" + this.task_id)
-        if (response.status == 200) {
-          if (response.data.status == "SUCCESS") {
-            this.isAnalysisComplete = true
-            this.detected_objects = response.data.result
-            console.log(response.data.result)
-          } else if (response.data.status == "PENDING") {
-            console.log("解析中。。。")
-          }
-        }
-      } catch (e) {
-        console.error(e)
+      const res = await this.callApiAnalyze()
+      if (res.status == "PENDING") {
+        console.log("PENDINGなので定期的にAPI叩きます")
+        await this.pollAPIAnalyze()
+      } else if (res.status == "SUCCESS") {
+        this.handleSuccessResponse(res)
+      } else {
+        console.log("APIエラーが発生しました")
       }
+    },
+    async callApiAnalyze() {
+      const res = await axios.get("http://localhost:8001/api/analyze/" + this.task_id)
+      return res.data
+    },
+    // ステータスがSUCCESSになるまでAPIを叩く
+    async pollAPIAnalyze() {
+      const timeId = setInterval(async () => {
+        const res = await this.callApiAnalyze()
+        if (res.status == "SUCCESS") {
+          this.handleSuccessResponse(res)
+          clearInterval(timeId)
+        } else if (res.status == "PENDING") {
+          console.log("PENDINGなので定期的にAPI叩きます")
+        }
+      },1500);
+    },
+    handleSuccessResponse(res) {
+      this.isAnalysisComplete = true
+      this.detected_objects = res.result
+      console.log("解析が完了しました")
     }
   }
 }

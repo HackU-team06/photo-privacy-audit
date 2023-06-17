@@ -10,11 +10,10 @@
       画像を選択
       <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
     </label>
-    <div v-if="img_preview_url">
-      <img :src="img_preview_url" id="preview_img">
+    <div v-if="imgPreviewUrl">
+      <img :src="imgPreviewUrl" id="preview_img">
     </div>
-    <button @click="uploadFile">アップロードする</button>
-    <button @click="analyze">解析する</button>
+    <button @click="uploadFile">解析する</button>
   </div>
 </template>
 
@@ -25,13 +24,13 @@ export default {
   data() {
     return {
       // 選択した画像ファイル
-      img_file_input: "",
+      imgFileInput: "",
 
       // 画像プレビュー用URL
-      img_preview_url: "",
+      imgPreviewUrl: "",
 
       // 画像アップロードして返ってくるタスクID
-      task_id: "",
+      taskId: "",
 
       // 解析完了のフラグ
       isAnalysisComplete: false,
@@ -43,8 +42,8 @@ export default {
   methods: {
     setFile(e) {
       const file = e.target.files[0]
-      this.img_file_input = file
-      this.img_preview_url = URL.createObjectURL(file)
+      this.imgFileInput = file
+      this.imgPreviewUrl = URL.createObjectURL(file)
     },
     async uploadFile() {
       let formData = new FormData()
@@ -57,41 +56,87 @@ export default {
         }
       }
       formData.append('req', JSON.stringify(req));
-      formData.append("upload_file",this.img_file_input);
+      formData.append("upload_file",this.imgFileInput);
       // ヘッダー
       const config = {
         headers: {
           "Content-Type": "multipart/form-data"
         }
       }
-      // fastAPIを叩く
       try {
         const response = await axios.post("http://localhost:8001/api/analyze", formData, config)
         if (response.status == 200) {
-          this.task_id = response.data.id
+          this.taskId = response.data.id
           console.log(response)
+          // 画像を解析する
+          this.analyze()
         }
       } catch (e) {
         console.error(e)
       }
     },
     async analyze() {
-      // fastAPIを叩く
-      try {
-        const response = await axios.get("http://localhost:8001/api/analyze/" + this.task_id)
-        if (response.status == 200) {
-          if (response.data.status == "SUCCESS") {
-            this.isAnalysisComplete = true
-            this.detected_objects = response.data.result
-            console.log(response.data.result)
-          } else if (response.data.status == "PENDING") {
-            console.log("解析中。。。")
-          }
-        }
-      } catch (e) {
-        console.error(e)
+      const res = await this.callApiAnalyze()
+      if (res.status == "PENDING") {
+        console.log("PENDINGなので定期的にAPI叩きます")
+        await this.pollAPIAnalyze()
+      } else if (res.status == "SUCCESS") {
+        this.handleSuccessResponse(res)
+      } else {
+        console.log("APIエラーが発生しました")
       }
-    }
+    },
+    async callApiAnalyze() {
+      const res = await axios.get("http://localhost:8001/api/analyze/" + this.taskId)
+      return res.data
+    },
+
+    // ステータスがSUCCESSになるまでAPIを叩く
+    async pollAPIAnalyze() {
+      const timeId = setInterval(async () => {
+        const res = await this.callApiAnalyze()
+        if (res.status == "SUCCESS") {
+          this.handleSuccessResponse(res)
+          clearInterval(timeId)
+        } else if (res.status == "PENDING") {
+          console.log("PENDINGなので定期的にAPI叩きます")
+        }
+      },1500);
+    },
+
+    handleSuccessResponse(res) {
+      this.isAnalysisComplete = true
+      this.detected_objects = res.result
+      this.applyBlurToDetectedCharacters()
+      console.log("解析が完了しました")
+    },
+
+    // 検出した文字をぼかす
+    applyBlurToDetectedCharacters() {
+      const previewImage = document.getElementById('preview_img');
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      // 画像の大きさをキャンバスに設定
+      canvas.width = previewImage.width;
+      canvas.height = previewImage.height;
+
+      // 画像を描画
+      context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
+
+      // 文字の位置情報を元にぼかし処理
+      this.detected_objects.forEach(obj => {
+        const { x, y, w, h } = obj.bounding_box;
+        console.log(x, y, w, h);
+
+        context.filter = 'blur(5px)';
+        // context.fillStyle = 'black';
+        context.fillRect(x, y, 100, 100);
+      });
+
+      // 修正した画像を表示するために、修正後のキャンバスをプレビュー画像のsrcに設定する
+      previewImage.src = canvas.toDataURL();
+    },
   }
 }
 </script>

@@ -14,6 +14,9 @@
       <img :src="imgPreviewUrl" id="preview_img">
     </div>
     <button @click="uploadFile">解析する</button>
+    <div v-if="canvas">
+      <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
+    </div>
   </div>
 </template>
 
@@ -36,7 +39,9 @@ export default {
       isAnalysisComplete: false,
 
       // 検出した物体の情報
-      detected_objects: {}
+      detected_objects: {},
+
+      canvas: ""
     }
   },
   methods: {
@@ -115,6 +120,7 @@ export default {
     applyBlurToDetectedCharacters() {
       const previewImage = document.getElementById('preview_img');
       const canvas = document.createElement('canvas');
+      this.canvas = canvas
       const context = canvas.getContext('2d');
 
       // 画像の大きさをキャンバスに設定
@@ -129,13 +135,24 @@ export default {
         const { x, y, w, h } = obj.bounding_box;
         console.log(x, y, w, h);
 
-        context.filter = 'blur(5px)';
+        context.filter = 'blur(15px)';
         // context.fillStyle = 'black';
         context.fillRect(x, y, 100, 100);
       });
 
       // 修正した画像を表示するために、修正後のキャンバスをプレビュー画像のsrcに設定する
       previewImage.src = canvas.toDataURL();
+    },
+    downloadImage() {
+      const canvas = this.canvas;
+      const link = document.createElement('a');
+
+      // 画像のダウンロード用リンクを作成
+      link.href = canvas.toDataURL();
+      link.download = 'canvas_image.png';
+
+      // リンクをクリックしてダウンロードを開始
+      link.click();
     },
   }
 }

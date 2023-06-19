@@ -21,16 +21,22 @@ __all__ = [
 
 
 class AnalyzeTaskConfig(BaseModel):
-    foo: bool
-    bar: int
-    baz: str
+    """解析の設定"""
+    
+    foo: bool = Field(default=True, description="設定項目例 (default: True)")
+    bar: int = Field(default=0, description="設定項目例 (default: 0)")
+    baz: str = Field(default='', description="設定項目例 (default: 空文字)")
 
 
-class AnalyzeTaskRequest(BaseModel):
-    config: AnalyzeTaskConfig
+class AnalyzeTaskRequestBase(BaseModel):
+    """解析のリクエストのベース"""
+
+    config: AnalyzeTaskConfig = Field(defautl=..., description="解析の設定")
 
 
-class AnalyzeTaskFormRequest(AnalyzeTaskRequest):
+class AnalyzeTaskFormRequest(AnalyzeTaskRequestBase):
+    """解析のリクエスト (フォーム版)"""
+
     @classmethod
     def __get_validators__(cls):
         yield cls.validate_to_json
@@ -42,29 +48,39 @@ class AnalyzeTaskFormRequest(AnalyzeTaskRequest):
         return value
 
 
-class AnalyzeTaskBase64Request(AnalyzeTaskRequest):
+class AnalyzeTaskBase64Request(AnalyzeTaskRequestBase):
+    """解析のリクエスト (Base64版)"""
+
     encoded_file: Annotated[str, 'Base64File']
 
 
-class AnalyzeTaskTaskRequestWithPath(AnalyzeTaskRequest):
-    path: Path
+class AnalyzeTaskTaskRequestWithPath(AnalyzeTaskRequestBase):
+    """解析のリクエスト (画像ファイルのパス付き)"""
+
+    path: Path = Field(default=..., description="画像ファイルのパス")
 
 
 class BoundingBox(BaseModel):
-    x: int
-    y: int
-    w: int
-    h: int
+    """バウンディングボックス"""
+    
+    x: int = Field(default=..., description="左上のx座標")
+    y: int = Field(default=..., description="左上のy座標")
+    w: int = Field(default=..., description="幅")
+    h: int = Field(default=..., description="高さ")
 
 
 class AnalyzeResult(BaseModel):
-    id: UUID4 = Field(default_factory=uuid.uuid4)
-    bounding_box: BoundingBox
-    name: str
-    description: str
+    """解析結果要素"""
+    
+    id: UUID4 = Field(default_factory=uuid.uuid4, description="ID")
+    bounding_box: BoundingBox = Field(default=..., description="バウンディングボックス")
+    name: str = Field(default=..., description="名前(ラベル, 種類)")
+    description: str = Field(default=..., description="説明")
 
 
 class AnalyzeResultList(BaseModel):
+    """解析結果リスト"""
+
     __root__: list[AnalyzeResult]
 
 
@@ -74,12 +90,16 @@ TaskStatusLiteral = Literal[
 
 
 class TaskStatus(BaseModel):
-    id: UUID4
-    status: TaskStatusLiteral
-    result: Optional[Any]
+    """タスクのステータス"""
+    
+    id: UUID4 = Field(default=..., description="ID")
+    status: TaskStatusLiteral = Field(default=..., description="ステータス")
+    result: Optional[Any] = Field(default=None, description="結果")
 
 
 class AnalyzeTaskStatus(BaseModel):
-    id: UUID4
-    status: TaskStatusLiteral
-    result: Optional[Union[AnalyzeResultList,list[AnalyzeResult]]]
+    """解析タスクのステータス"""
+
+    id: UUID4 = Field(default=..., description="ID")
+    status: TaskStatusLiteral = Field(default=..., description="ステータス")
+    result: Optional[Union[AnalyzeResultList,list[AnalyzeResult]]] = Field(default=None, description="結果")

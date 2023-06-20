@@ -1,5 +1,5 @@
-from app.models import AnalyzeResult
-from base import BackgroundAnalyzeProcessBase
+from models import AnalyzeResult
+from .base import BackgroundAnalyzeProcessBase
 
 class YoloAnalyze(BackgroundAnalyzeProcessBase):
     def __init__(self, model_path: str) -> None:

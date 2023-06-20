@@ -1,5 +1,5 @@
-from app.models import AnalyzeResult
-from base import BackgroundAnalyzeProcessBase
+from models import AnalyzeResult
+from .base import BackgroundAnalyzeProcessBase
 
 class GcvaAnalyze(BackgroundAnalyzeProcessBase):
     def __init__(self, json_path: str) -> None:

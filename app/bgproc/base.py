@@ -1,4 +1,4 @@
-from ..models import AnalyzeResult
+from models import AnalyzeResult
 
 class BackgroundAnalyzeProcessBase():
     def __init__(self) -> None:

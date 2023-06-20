@@ -1,7 +1,7 @@
 # GCVA_YOLOのmain処理みたいな単体テスト等はココで実行する
 from . import YoloAnalyze
 from . import GcvaAnalyze
-from . import AnalyzeResult
+from models import AnalyzeResult
 
 
 def main() -> list[AnalyzeResult]:

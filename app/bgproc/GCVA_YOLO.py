@@ -6,11 +6,11 @@ from google.oauth2 import service_account
 
 def main():
     # 身元証明書のjson path
-    JSON_PATH ='./content/google_cloud_account_service.json'
+    JSON_PATH ='/app/bgproc/content/google_cloud_account_service.json'
     # The name of the image file to annotate
-    IMG_PATH = './IMG_6407.heic'
+    IMG_PATH = '/app/bgproc/content/IMG_6407.jpg'
     ORIGINAL_MODEL = 'yolov8n.pt'
-    CUSTOM_MODEL = './content/train_model/using_model.pt'
+    CUSTOM_MODEL = '/app/bgproc/content/train_model/using_model.pt'
     
     oriyolo_result = useYOLO(ORIGINAL_MODEL,IMG_PATH)#既存モデルyolo検出
     gcva_result = useGCVA(JSON_PATH,IMG_PATH)#GCVAによる文字検出

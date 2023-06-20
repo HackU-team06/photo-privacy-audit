@@ -1,13 +1,14 @@
 # GCVA_YOLOのmain処理みたいな単体テスト等はココで実行する
 from . import YoloAnalyze
 from . import GcvaAnalyze
+from . import AnalyzeResult
 
 
-def main():
+def main() -> list[AnalyzeResult]:
     # 身元証明書のjson path
     JSON_PATH = "./content/google_cloud_account_service.json"
     # The name of the image file to annotate
-    IMG_PATH = "./IMG_6407.heic"
+    IMG_PATH = "./IMG_6407.jpg"
     ORIGINAL_MODEL = "yolov8n.pt"
     CUSTOM_MODEL = "./content/train_model/using_model.pt"
 

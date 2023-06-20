@@ -1,21 +1,21 @@
 <template>
     <div>
-        <v-app-bar fixed color="grey lighten-5">
+        <v-app-bar fixed color="yellow">
             <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-            <v-toolbar-title>PrivacyChecker</v-toolbar-title>
+            <v-toolbar-title color="white">PrivacyChecker</v-toolbar-title>
             <v-spacer></v-spacer>
         </v-app-bar>
-        <v-navigation-drawer v-model="drawer" fixed temporary>
+        <v-navigation-drawer v-model="drawer" fixed temporary color="yellow lighten-5">
             <v-list nav dense>
-                <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4">
+                <v-list-item-group active-class="deep-purple--text text--accent-4">
                     <v-list-item v-for="(menuItem, index) in menuItems" :key=index>
-                        <v-list-icon>
+                        <v-list-item-icon>
                             <v-icon>{{menuItem.icon}}</v-icon>
-                        </v-list-icon>
-                        <v-list-tile>
+                        </v-list-item-icon>
+                        <v-list-item>
                             <a v-if="menuItem.name=='home'" v-bind:href="`${menuItem.link}`">{{menuItem.name}}</a>
                             <a v-else v-bind:href="`${menuItem.link}`" target="_blank">{{menuItem.name}}</a>
-                        </v-list-tile>
+                        </v-list-item>
                     </v-list-item>
                 </v-list-item-group>
             </v-list>
@@ -31,7 +31,7 @@
                 menuItems: [
                 {
                     icon: "mdi-home",
-                    name: "home",
+                    name: "Home",
                     link: "/",
                 },{
                     icon: "mdi-yahoo",
@@ -39,17 +39,14 @@
                     link: "https://www.yahoo.co.jp",
                 },{
                     icon: "mdi-twitter",
-                    name: "twitter!",
+                    name: "Twitter",
                     link: "https://www.twitter.com",
                 },{
                     icon: "mdi-github",
-                    name: "github",
+                    name: "Github",
                     link: "https://www.github.com",
                 },]
             }
-        },
-        methods:{
-            
         }
     }
 </script>

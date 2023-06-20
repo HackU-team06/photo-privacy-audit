@@ -25,7 +25,7 @@ services:
       dockerfile: worker.dockerfile
     depends_on:
       - redis
-    command: celery --app tasks.celery worker --loglevel=info
+    command: celery --app=tasks.celery worker --loglevel=info
     env_file:
       - .env
     volumes:

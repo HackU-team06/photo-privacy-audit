@@ -6,7 +6,7 @@ from celery.app.task import Task
 from fastapi.encoders import jsonable_encoder
 from PIL import Image
 
-from models import *
+from models import AnalyzeResult, AnalyzeResultList, AnalyzeTaskTaskRequestWithPath
 
 
 celery = Celery(__name__)

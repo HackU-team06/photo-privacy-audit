@@ -5,21 +5,6 @@ from typing import Optional, Literal, Any, Union, Annotated
 from pathlib import Path
 
 
-
-__all__ = [
-    "AnalyzeTaskConfig",
-    "AnalyzeTaskRequest",
-    "AnalyzeTaskFormRequest",
-    "AnalyzeTaskBase64Request",
-    "AnalyzeTaskTaskRequestWithPath",
-    "BoundingBox",
-    "AnalyzeResult",
-    "AnalyzeResultList",
-    "TaskStatus",
-    "AnalyzeTaskStatus",
-]
-
-
 class AnalyzeTaskConfig(BaseModel):
     """解析の設定"""
     
@@ -76,6 +61,7 @@ class AnalyzeResult(BaseModel):
     bounding_box: BoundingBox = Field(default=..., description="バウンディングボックス")
     name: str = Field(default=..., description="名前(ラベル, 種類)")
     description: str = Field(default=..., description="説明")
+    rate: float = Field(default=..., description="危険度")
 
 
 class AnalyzeResultList(BaseModel):

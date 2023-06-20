@@ -27,6 +27,7 @@
         <div v-if="canvas">
           <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
         </div>
+        <img class="download_img">
       </div>
     </v-content>
   </v-app>
@@ -131,13 +132,10 @@ export default {
     },
 
     handleSuccessResponse(res) {
-      // this.isAnalysisComplete = true
-      // this.detected_objects = res.result
-      // this.applyBlurToDetectedCharacters()
-      // console.log("解析が完了しました")
 
       this.isAnalysisComplete = true
       this.detected_objects = res.result
+      this.applyBlurToDetectedCharacters()
       for(var i=0;i < this.detected_objects.length;i++){
         this.det_objects.push({'x':Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h)})
         console.log(this.det_objects[0]);
@@ -164,12 +162,8 @@ export default {
         console.log(x, y, w, h);
 
         context.filter = 'blur(15px)';
-        // context.fillStyle = 'black';
         context.fillRect(x, y, 100, 100);
       });
-
-      // 修正した画像を表示するために、修正後のキャンバスをプレビュー画像のsrcに設定する
-      previewImage.src = canvas.toDataURL();
     },
     downloadImage() {
       const canvas = this.canvas;
@@ -217,6 +211,10 @@ img {
   left: 50px;
   width: 80%;
   height: 100%;
+}
+
+.download_img{
+  display: none;
 }
 
 .svg_container {

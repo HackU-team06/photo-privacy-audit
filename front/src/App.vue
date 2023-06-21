@@ -16,8 +16,8 @@
           <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
         </label>
         <div class="img_container" v-if="imgPreviewUrl">
-          <img class="img_prev" :src="imgPreviewUrl" id="preview_img">
-          <svg :width="svgWidth" :height="svgHeight" class="svg_container">
+          <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
+          <svg :width="imgWidth" :height="imgHeight" class="svg_container">
             <rect v-for="(det_object, index) in det_objects" :key="index"
               :x="det_object.x" :y="det_object.y" :width="det_object.w" :height="det_object.h" stroke="red" fill="none" stroke-width="2" />
           </svg>
@@ -56,9 +56,9 @@ export default {
       detected_objects: {},
 
       canvas: "",
-      //展開するsvgの大きさ定義
-      svgWidth: 500,
-      svgHeight: 500,
+      //uploadされる画像の大きさ情報
+      imgWidth: '',
+      imgHeight: '',
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -82,6 +82,10 @@ export default {
           baz: "string"
         }
       }
+      //upload画像の大きさ格納
+      this.imgWidth = document.getElementById('preview_img').width
+      this.imgHeight = document.getElementById('preview_img').height
+
       formData.append('req', JSON.stringify(req));
       formData.append("upload_file",this.imgFileInput);
       // ヘッダー
@@ -132,10 +136,12 @@ export default {
     },
 
     handleSuccessResponse(res) {
-
+      console.log('width:' + this.imgWidth + ', height:' + this.imgHeight);
       this.isAnalysisComplete = true
       this.detected_objects = res.result
       this.applyBlurToDetectedCharacters()
+      //枠で囲む座標データをdet_objectsにpush
+      //形式：{x:100, y:200, w:100, h:100}
       for(var i=0;i < this.detected_objects.length;i++){
         this.det_objects.push({'x':Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h)})
         console.log(this.det_objects[0]);
@@ -194,32 +200,27 @@ export default {
   display: none;
 }
 
-/* #preview_img {
-  width: 80%;
-} */
 
 .img-container {
-  position: relative;
-  width: 80%;
-  height: 100%;
+  top:300px;
+  left:50px;
 }
 
 
-img {
-  position: absolute;
-  top: 300px;
-  left: 50px;
-  width: 80%;
-  height: 100%;
+img{
+  left:10px;
 }
 
 .download_img{
   display: none;
 }
 
+.img_prev{
+  position: relative;
+}
+
 .svg_container {
+  left:10px;
   position: absolute;
-  top:300px;
-  left: 50px;
 }
 </style>

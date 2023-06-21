@@ -17,7 +17,7 @@
 1. `docker compose up -d --build` でcompose起動
 1. 起動中のコンテナをvscodeにアタッチ
 1. `docker compose reload {service_name}` でコンテナ再起動
-- http://localhost:8000 : nginx
+- http://localhost:8000 : nginx (フロントエンド)
   - http://localhost:8000/api : fastAPIにリバースプロキシ
 - http://localhost:8001 : fastAPI
   - http://localhost:8001/docs : Swagger (APIデバッガー)

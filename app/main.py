@@ -17,16 +17,6 @@ from models import (
 from tasks import analyze_task
 
 app = FastAPI(debug=bool(os.getenv("DEBUG", False)))
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8080", "https://example.com"],  # 許可するフロントエンドのオリジン
-    allow_origin_regex=r"^https://example-(.+)\.com$",  # 追加で許可するフロントエンドのオリジンの正規表現
-    allow_credentials=True,  # 資格情報の共有の可否
-    allow_methods=["*"],  # 許可するHTTPリクエストメソッド
-    allow_headers=["*"],  # フロントエンドからの認可するHTTPヘッダー情報
-    expose_headers=["*"],  # フロントエンドがアクセスできるHTTPヘッダー情報
-)
-
 
 @app.post("/api/analyze", response_model=AnalyzeTaskStatus)
 async def request_analyze(

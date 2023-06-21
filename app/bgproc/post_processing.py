@@ -227,6 +227,15 @@ def from_labes_to_objects(output_list,list_labels):
         output_list[i][0] = list_labels[output_list[i][0]]
     return output_list
 
+def coord2size(output_list):
+    for i in range(len(output_list)):
+        #x2->w
+        output_list[i][3] = output_list[i][3]-output_list[i][1]
+        #y2->h
+        output_list[i][4] = output_list[i][4]-output_list[i][2]
+    return output_list
+
+
 def list2dictionaly(output_list):
   output_dic = []
   anaResult = ["bounding_box","name","description","rate"]

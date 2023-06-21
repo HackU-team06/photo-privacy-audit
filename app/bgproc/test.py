@@ -45,6 +45,7 @@ def main() -> list[AnalyzeResult]:
     output= post_processing.detect_duplicate(output,param1,param2)
     output= post_processing.find_letter_in_BandU(output,param,cls_utilitypole,cls_bluesign,cls_letter)
     output= post_processing.from_labes_to_objects(output,list_labels)
+    output = post_processing.coord2size(output)
     print(output)
 
     #辞書型にするなら

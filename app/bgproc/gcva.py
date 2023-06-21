@@ -48,7 +48,7 @@ class GcvaAnalyze(BackgroundAnalyzeProcessBase):
             x2=max(vertices[1][0],vertices[2][0])
             y2=max(vertices[2][1],vertices[3][1])
             if count !=0:
-                output.append([14,x1,y1,x2-x1,y2-y1])
+                output.append([14,x1,y1,x2,y2])
             count += 1
         return(output)
 

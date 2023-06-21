@@ -23,7 +23,7 @@ class YoloAnalyze(BackgroundAnalyzeProcessBase):
         for box, cls in zip(boxes, classes):
             name = names[int(cls)]
             x1, y1, x2, y2 = [int(i) for i in box.xyxy[0]]
-            output.append([int(cls)+begin_num,x1,y1,x2-x1,y2-y1])#配列に保存
+            output.append([int(cls)+begin_num,x1,y1,x2,y2])#配列に保存
 
         return (output) 
 

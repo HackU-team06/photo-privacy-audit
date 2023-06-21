@@ -95,7 +95,7 @@ export default {
         }
       }
       try {
-        const response = await axios.post("http://localhost:8001/api/analyze", formData, config)
+        const response = await axios.post("/api/analyze", formData, config)
         if (response.status == 200) {
           this.taskId = response.data.id
           console.log(response)
@@ -118,7 +118,7 @@ export default {
       }
     },
     async callApiAnalyze() {
-      const res = await axios.get("http://localhost:8001/api/analyze/" + this.taskId)
+      const res = await axios.get("/api/analyze/" + this.taskId)
       return res.data
     },
 

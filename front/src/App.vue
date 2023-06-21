@@ -1,24 +1,38 @@
 <template>
-  <div id="app">
-    <h1>サービス名</h1>
-    <p>
-      説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
-      説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
-      説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文
-    </p>
-    <label for="file_input">
-      画像を選択
-      <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
-    </label>
-    <div v-if="imgPreviewUrl">
-      <img :src="imgPreviewUrl" id="preview_img">
+  <v-app>
+    <div class="header">
+      <header-comp></header-comp>
     </div>
-    <button @click="uploadFile">解析する</button>
-    <div v-if="canvas">
-      <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
-    </div>
-  </div>
+    <v-content class="main">
+      <div id="app">
+        <h2>使い方</h2>
+        <ol>
+          <li>ライブラリから画像を選択</li>
+          <li>プレビューを確認しアップロード</li>
+          <li>画像解析後に結果を確認</li>
+        </ol>
+        <label for="file_input">
+          画像を選択
+          <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
+        </label>
+        <div class="img_container" v-if="imgPreviewUrl">
+          <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
+          <svg :width="imgWidth" :height="imgHeight" class="svg_container">
+            <rect v-for="(det_object, index) in det_objects" :key="index"
+              :x="det_object.x" :y="det_object.y" :width="det_object.w" :height="det_object.h" stroke="red" fill="none" stroke-width="2" />
+          </svg>
+        </div>
+        <br>
+        <v-btn @click="uploadFile">解析する</v-btn>
+        <div v-if="canvas">
+          <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
+        </div>
+        <img class="download_img">
+      </div>
+    </v-content>
+  </v-app>
 </template>
+
 
 <script>
 import axios from "axios"
@@ -41,7 +55,15 @@ export default {
       // 検出した物体の情報
       detected_objects: {},
 
-      canvas: ""
+      canvas: "",
+      //uploadされる画像の大きさ情報
+      imgWidth: '',
+      imgHeight: '',
+
+      //detected_objectsを格納
+      //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
+      det_objects: [
+      ]
     }
   },
   methods: {
@@ -60,6 +82,10 @@ export default {
           baz: "string"
         }
       }
+      //upload画像の大きさ格納
+      this.imgWidth = document.getElementById('preview_img').width
+      this.imgHeight = document.getElementById('preview_img').height
+
       formData.append('req', JSON.stringify(req));
       formData.append("upload_file",this.imgFileInput);
       // ヘッダー
@@ -110,10 +136,16 @@ export default {
     },
 
     handleSuccessResponse(res) {
+      console.log('width:' + this.imgWidth + ', height:' + this.imgHeight);
       this.isAnalysisComplete = true
       this.detected_objects = res.result
       this.applyBlurToDetectedCharacters()
-      console.log("解析が完了しました")
+      //枠で囲む座標データをdet_objectsにpush
+      //形式：{x:100, y:200, w:100, h:100}
+      for(var i=0;i < this.detected_objects.length;i++){
+        this.det_objects.push({'x':Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h)})
+        console.log(this.det_objects[0]);
+      }
     },
 
     // 検出した文字をぼかす
@@ -136,12 +168,8 @@ export default {
         console.log(x, y, w, h);
 
         context.filter = 'blur(15px)';
-        // context.fillStyle = 'black';
         context.fillRect(x, y, 100, 100);
       });
-
-      // 修正した画像を表示するために、修正後のキャンバスをプレビュー画像のsrcに設定する
-      previewImage.src = canvas.toDataURL();
     },
     downloadImage() {
       const canvas = this.canvas;
@@ -172,7 +200,27 @@ export default {
   display: none;
 }
 
-#preview_img {
-  width: 80%;
+
+.img-container {
+  top:300px;
+  left:50px;
+}
+
+
+img{
+  left:10px;
+}
+
+.download_img{
+  display: none;
+}
+
+.img_prev{
+  position: relative;
+}
+
+.svg_container {
+  left:10px;
+  position: absolute;
 }
 </style>

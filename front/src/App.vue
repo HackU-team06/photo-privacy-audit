@@ -23,7 +23,7 @@
           </svg>
         </div>
         <br>
-        <v-btn @click="uploadFile">解析する</v-btn>
+        <v-btn v-if="isVisible" @click="uploadFile">解析する</v-btn>
         <div v-if="canvas">
           <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
         </div>
@@ -63,7 +63,11 @@ export default {
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
       det_objects: [
-      ]
+      ],
+
+      //解析ボタンを画像uploadするまで隠す
+      //setFile()でtrueへ
+      isVisible : false
     }
   },
   methods: {
@@ -71,6 +75,7 @@ export default {
       const file = e.target.files[0]
       this.imgFileInput = file
       this.imgPreviewUrl = URL.createObjectURL(file)
+      this.isVisible = true
     },
     async uploadFile() {
       let formData = new FormData()

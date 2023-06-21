@@ -2,7 +2,7 @@
     <div>
         <v-app-bar fixed color="yellow">
             <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-            <v-toolbar-title color="white">PrivacyChecker</v-toolbar-title>
+            <v-toolbar-title color="white">特定警察</v-toolbar-title>
             <v-spacer></v-spacer>
         </v-app-bar>
         <v-navigation-drawer v-model="drawer" fixed temporary color="yellow lighten-5">

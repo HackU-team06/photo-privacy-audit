@@ -49,7 +49,7 @@ def main() -> list[AnalyzeResult]:
 
     #辞書型にするなら
     output = post_processing.list2dictionaly(output)
-    output=AnalyzeResultList(output)
+    output=AnalyzeResultList.parse_obj(output)
     print(output)
     
 

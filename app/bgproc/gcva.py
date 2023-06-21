@@ -40,12 +40,15 @@ class GcvaAnalyze(BackgroundAnalyzeProcessBase):
 
         # レスポンスからテキストの位置座標を抽出(GCVA)
         output=[]
+        count=0
         for texts in response.text_annotations:
             vertices = [(vertex.x, vertex.y) for vertex in texts.bounding_poly.vertices]
             x1=min(vertices[0][0],vertices[3][0])
             y1=min(vertices[0][1],vertices[1][1])
             x2=max(vertices[1][0],vertices[2][0])
             y2=max(vertices[2][1],vertices[3][1])
-            output.append([14,x1,y1,x2-x1,y2-y1])
+            if count !=0:
+                output.append([14,x1,y1,x2-x1,y2-y1])
+            count += 1
         return(output)
 

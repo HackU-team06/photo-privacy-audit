@@ -5,6 +5,7 @@ import tempfile
 
 from fastapi import FastAPI, UploadFile, File, Body
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from celery.result import AsyncResult
 
 from models import (
@@ -16,7 +17,6 @@ from models import (
 from tasks import analyze_task
 
 app = FastAPI(debug=bool(os.getenv("DEBUG", False)))
-
 
 @app.post("/api/analyze", response_model=AnalyzeTaskStatus)
 async def request_analyze(

@@ -8,15 +8,15 @@ from pathlib import Path
 class AnalyzeTaskConfig(BaseModel):
     """解析の設定"""
     
-    foo: bool = Field(default=True, description="設定項目例 (default: True)")
-    bar: int = Field(default=0, description="設定項目例 (default: 0)")
-    baz: str = Field(default='', description="設定項目例 (default: 空文字)")
+    foo: bool = Field(True, description="設定項目例 (default: True)")
+    bar: int = Field(0, description="設定項目例 (default: 0)")
+    baz: str = Field('', description="設定項目例 (default: 空文字)")
 
 
 class AnalyzeTaskRequestBase(BaseModel):
     """解析のリクエストのベース"""
 
-    config: AnalyzeTaskConfig = Field(defautl=..., description="解析の設定")
+    config: AnalyzeTaskConfig = Field(..., description="解析の設定")
 
 
 class AnalyzeTaskFormRequest(AnalyzeTaskRequestBase):
@@ -42,26 +42,26 @@ class AnalyzeTaskBase64Request(AnalyzeTaskRequestBase):
 class AnalyzeTaskTaskRequestWithPath(AnalyzeTaskRequestBase):
     """解析のリクエスト (画像ファイルのパス付き)"""
 
-    path: Path = Field(default=..., description="画像ファイルのパス")
+    path: Path = Field(..., description="画像ファイルのパス")
 
 
 class BoundingBox(BaseModel):
     """バウンディングボックス"""
     
-    x: int = Field(default=..., description="左上のx座標")
-    y: int = Field(default=..., description="左上のy座標")
-    w: int = Field(default=..., description="幅")
-    h: int = Field(default=..., description="高さ")
+    x: int = Field(..., description="左上のx座標")
+    y: int = Field(..., description="左上のy座標")
+    w: int = Field(..., description="幅")
+    h: int = Field(..., description="高さ")
 
 
 class AnalyzeResult(BaseModel):
     """解析結果要素"""
     
     id: UUID4 = Field(default_factory=uuid.uuid4, description="ID")
-    bounding_box: BoundingBox = Field(default=..., description="バウンディングボックス")
-    name: str = Field(default=..., description="名前(ラベル, 種類)")
-    description: str = Field(default=..., description="説明")
-    rate: float = Field(default=..., description="危険度")
+    bounding_box: BoundingBox = Field(..., description="バウンディングボックス")
+    name: str = Field(..., description="名前(ラベル, 種類)")
+    description: str = Field(..., description="説明")
+    rate: float = Field(..., description="危険度")
 
 
 class AnalyzeResultList(BaseModel):
@@ -78,14 +78,14 @@ TaskStatusLiteral = Literal[
 class TaskStatus(BaseModel):
     """タスクのステータス"""
     
-    id: UUID4 = Field(default=..., description="ID")
-    status: TaskStatusLiteral = Field(default=..., description="ステータス")
-    result: Optional[Any] = Field(default=None, description="結果")
+    id: UUID4 = Field(..., description="ID")
+    status: TaskStatusLiteral = Field(..., description="ステータス")
+    result: Optional[Any] = Field(None, description="結果")
 
 
 class AnalyzeTaskStatus(BaseModel):
     """解析タスクのステータス"""
 
-    id: UUID4 = Field(default=..., description="ID")
-    status: TaskStatusLiteral = Field(default=..., description="ステータス")
-    result: Optional[Union[AnalyzeResultList,list[AnalyzeResult]]] = Field(default=None, description="結果")
+    id: UUID4 = Field(..., description="ID")
+    status: TaskStatusLiteral = Field(..., description="ステータス")
+    result: Optional[Union[AnalyzeResultList,list[AnalyzeResult]]] = Field(None, description="結果")

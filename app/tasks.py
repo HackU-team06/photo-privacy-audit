@@ -39,6 +39,7 @@ def analyze(req_json: dict) -> list:
                 bounding_box={"x": 1, "y": 2, "w": 3, "h": 4},
                 name="sample",
                 description="sample result",
+                rate=1.0,
             )
         ]
     finally:

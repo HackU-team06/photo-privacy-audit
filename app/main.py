@@ -8,7 +8,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from celery.result import AsyncResult
 
-from models import *
+from models import (
+    AnalyzeTaskFormRequest,
+    AnalyzeTaskBase64Request,
+    AnalyzeTaskStatus,
+    AnalyzeTaskTaskRequestWithPath,
+)
 from tasks import analyze_task
 
 app = FastAPI(debug=bool(os.getenv("DEBUG", False)))
@@ -24,7 +29,9 @@ app.add_middleware(
 
 
 @app.post("/api/analyze", response_model=AnalyzeTaskStatus)
-async def request_analyze(req: AnalyzeTaskFormRequest = Body(...), upload_file: UploadFile = File(...)) -> AnalyzeTaskStatus:
+async def request_analyze(
+    req: AnalyzeTaskFormRequest = Body(...), upload_file: UploadFile = File(...)
+) -> AnalyzeTaskStatus:
     """
     画像解析タスクのリクエスト (multipart/form-data)
 
@@ -42,7 +49,7 @@ async def request_analyze(req: AnalyzeTaskFormRequest = Body(...), upload_file: 
     except Exception as e:
         os.remove(path)
         raise e
-        
+
     # configと画像パスからAnalyzeTaskTaskRequestWithPathを作成
     req_with_path = AnalyzeTaskTaskRequestWithPath(config=req.config, path=path)
 
@@ -64,7 +71,7 @@ async def request_analyze(req: AnalyzeTaskBase64Request) -> AnalyzeTaskStatus:
 
     タスクIDを含むステータスを返す
     """
-    
+
     # アップロード画像を一時ファイルに保存
     print(req)
     filebytes = base64.b64decode(req.encoded_file)
@@ -75,7 +82,7 @@ async def request_analyze(req: AnalyzeTaskBase64Request) -> AnalyzeTaskStatus:
     except Exception as e:
         os.remove(path)
         raise e
-    
+
     # configと画像パスからAnalyzeTaskTaskRequestWithPathを作成
     req_with_path = AnalyzeTaskTaskRequestWithPath(config=req.config, path=path)
 
@@ -88,14 +95,13 @@ async def request_analyze(req: AnalyzeTaskBase64Request) -> AnalyzeTaskStatus:
     return status
 
 
-
 @app.get("/api/analyze/{task_id}", response_model=AnalyzeTaskStatus)
 async def check_analyze_status(task_id: str) -> AnalyzeTaskStatus:
     """
     画像解析タスクのステータスをチェックする
     終了していればresultが入っている
     """
-    
+
     task = AsyncResult(task_id)
     status = AnalyzeTaskStatus(id=task_id, status=task.status, result=task.result)
     return status

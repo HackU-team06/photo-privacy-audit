@@ -6,7 +6,7 @@ class YoloAnalyze(BackgroundAnalyzeProcessBase):
     def __init__(self, model_path: str) -> None:
         self.model_path = model_path
 
-    def run(self, image_path: str,begin_num: int) -> list[AnalyzeResult]:
+    def run(self, image_path: str,begin_num: int) -> list[list[int]]:
         # モデルの関数作成(YOLO)
         model = YOLO(self.model_path)
         #YOLO-customから座標データを抽出(YOLO)

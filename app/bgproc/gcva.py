@@ -9,7 +9,7 @@ class GcvaAnalyze(BackgroundAnalyzeProcessBase):
     def __init__(self, json_path: str) -> None:
         self.json_path = json_path
 
-    def run(self, image_path: str) -> list[AnalyzeResult]:
+    def run(self, image_path: str) -> list[list[int]]:
         # 身元証明書のjson読み込み(GCVA)
         credentials = service_account.Credentials.from_service_account_file(self.json_path)
         client = vision.ImageAnnotatorClient(credentials=credentials)

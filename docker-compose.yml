@@ -71,8 +71,8 @@ services:
     build:
       context: ./front
       dockerfile: front.dockerfile
-    ports:
-      - 9000:8080
+    expose:
+     - "8080"
     restart: always
     volumes:
       - .:/repo

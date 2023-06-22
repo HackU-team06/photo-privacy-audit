@@ -6,7 +6,7 @@ from celery.app.task import Task
 from fastapi.encoders import jsonable_encoder
 from PIL import Image
 
-from models import *
+from models import AnalyzeResult, AnalyzeResultList, AnalyzeTaskTaskRequestWithPath
 
 
 celery = Celery(__name__)
@@ -39,6 +39,7 @@ def analyze(req_json: dict) -> list:
                 bounding_box={"x": 1, "y": 2, "w": 3, "h": 4},
                 name="sample",
                 description="sample result",
+                rate=1.0,
             )
         ]
     finally:

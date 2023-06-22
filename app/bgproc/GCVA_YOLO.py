@@ -83,9 +83,13 @@ def useGCVA(JSON_PATH,IMG_PATH):
             for paragraph in block.paragraphs:
                 for word in paragraph.words:
                     vertices = [(vertex.x, vertex.y) for vertex in word.bounding_box.vertices]
+                    x1=abs(round((vertices[0][0]+vertices[3][0])/2))
+                    y1=abs(round((vertices[0][1]+vertices[1][1])/2))
+                    x2=abs(round((vertices[1][0]+vertices[2][0])/2))
+                    y2=abs(round((vertices[2][1]+vertices[3][1])/2))
                     #画像として表示
                     #img = cv2.rectangle(img,vertices[0],vertices[2],(0, 255, 0),thickness=8)
-                    output.append([14,round(vertices[0][0],7),round(vertices[0][1],7),round(vertices[2][0],7),round(vertices[2][1],7)])
+                    output.append([14,x1,y1,x2-x1,y2-y1])
     return(output)    
 
     #param1,param２は試しながら調整する必要あり

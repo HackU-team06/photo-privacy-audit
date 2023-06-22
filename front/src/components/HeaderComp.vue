@@ -1,11 +1,11 @@
 <template>
     <div>
-        <v-app-bar fixed color="yellow">
+        <v-app-bar fixed color="#47A0F6">
             <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-            <v-toolbar-title color="white">特定警察</v-toolbar-title>
+            <v-toolbar-title>特定警察</v-toolbar-title>
             <v-spacer></v-spacer>
         </v-app-bar>
-        <v-navigation-drawer v-model="drawer" fixed temporary color="yellow lighten-5">
+        <v-navigation-drawer v-model="drawer" fixed temporary color="#F2F7FF">
             <v-list nav dense>
                 <v-list-item-group active-class="deep-purple--text text--accent-4">
                     <v-list-item v-for="(menuItem, index) in menuItems" :key=index>
@@ -45,7 +45,7 @@
                     icon: "mdi-github",
                     name: "Github",
                     link: "https://www.github.com",
-                },]
+                }],
             }
         }
     }

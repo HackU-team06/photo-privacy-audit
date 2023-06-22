@@ -5,16 +5,52 @@
     </div>
     <v-content class="main">
       <div id="app">
-        <h2>使い方</h2>
+        <img src="./logo.png" width="100%" height="100%">
+        <!-- <h2>特定警察とは？？</h2>
+        <p>普段皆さんが何気なくuploadする画像に特定で使用されそうな要素が無いかをチェックするためのWebアプリケーションです。</p> -->
+        <v-card color="#F2F7FF">
+            <v-card-title>
+              特定警察とは？？
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="text-left">
+              皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
+              このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
+              <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
+              ・危険要素を枠で表示(step3)<br>
+              ・危険度の表示(step3)<br>
+              ・危険要素へモザイクをかけた写真をダウンロード(step4)
+            </v-card-text>
+        </v-card>
+        <br>
+        <!-- <h2>使い方</h2>
         <ol>
           <li>ライブラリから画像を選択</li>
           <li>プレビューを確認しアップロード</li>
           <li>画像解析後に結果を確認</li>
-        </ol>
-        <label for="file_input">
-          画像を選択
-          <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
-        </label>
+        </ol> -->
+        <v-card color="#F2F7FF">
+            <v-card-title>
+              使用手順
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-list color="#F2F7FF">
+                <v-list-item v-for="(item, index) in explainItems" :key="index">
+                  <v-list-item-content>
+                    <v-list-item-title class="text-left">step{{ index + 1 }}</v-list-item-title>
+                    <v-list-item-subtitle class="text-left">{{ item }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+        </v-card>
+        <br>
+        <div class="inputFile">
+          <v-btn outlined color="#108CEB" @click="openFile()">画像選択</v-btn>
+          <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
+        </div>
+        <br>
         <div class="img_container" v-if="imgPreviewUrl">
           <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
           <svg :width="imgWidth" :height="imgHeight" class="svg_container">
@@ -28,7 +64,7 @@
           <v-btn
               :disabled="dialog"
               :loading="dialog"
-              color="blue"
+              color="#108CEB"
               outlined
               @click="dialog = true; uploadFile();"
           > Upload </v-btn>
@@ -43,16 +79,14 @@
                       analyzing...(Please wait!)
                       <v-progress-linear
                           indeterminate
-                          color="blue"
+                          color="#108CEB"
                       ></v-progress-linear>
                   </v-card-text>
               </v-card>
           </v-dialog>
         </div>
-        <!-- <v-btn v-if="isVisible" @click="uploadFile">解析する</v-btn>
-        <load-button v-if="isVisible" @click="uploadFile"></load-button> -->
         <div v-if="canvas">
-          <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
+          <v-btn outlined color="#108CEB" @click="downloadImage">文字をぼかした写真をダウンロード</v-btn>
         </div>
         <img class="download_img">
       </div>
@@ -83,9 +117,11 @@ export default {
       detected_objects: {},
 
       canvas: "",
+
       //uploadされる画像の大きさ情報
-      imgWidth: '',
-      imgHeight: '',
+      //画像がuploadされれば大きさを更新
+      imgWidth: 10,
+      imgHeight: 10,
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -96,7 +132,16 @@ export default {
       //setFile()でtrueへ
       isVisible : false,
 
-      dialog:false
+      //解析中のdialogを開閉するタイミングを規定
+      dialog:false,
+
+      //使い方の説明手順
+      explainItems:[
+        "「画像選択」ボタンを押しライブラリから画像を選択",
+        "プレビューを確認し「UPLOAD」ボタンを押す",
+        "画像解析後に結果(枠・危険度の表示)を確認",
+        "「ぼかした写真をダウンロード」ボタンを押す"
+      ]
     }
   },
   methods: {
@@ -216,6 +261,9 @@ export default {
       // リンクをクリックしてダウンロードを開始
       link.click();
     },
+    openFile(){
+      this.$refs.fileInput.click();
+    }
   },
   watch:{
     //det_objectに値が入ればdialogを閉じる
@@ -235,7 +283,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 40px;
 }
 
 #file_input {

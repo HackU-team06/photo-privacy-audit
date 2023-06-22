@@ -18,7 +18,8 @@ from tasks import analyze_task
 
 app = FastAPI(debug=bool(os.getenv("DEBUG", False)),
               docs_url="/docs/swagger",
-              redoc_url="/docs/redoc")
+              redoc_url="/docs/redoc",
+              openapi_url="/docs/openapi.json")
 
 @app.post("/api/analyze", response_model=AnalyzeTaskStatus)
 async def request_analyze(

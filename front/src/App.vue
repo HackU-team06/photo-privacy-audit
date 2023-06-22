@@ -11,10 +11,17 @@
           <li>プレビューを確認しアップロード</li>
           <li>画像解析後に結果を確認</li>
         </ol>
-        <label for="file_input">
+        <!-- <label for="file_input">
           画像を選択
           <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
-        </label>
+        </label> -->
+        <br>
+        <div class="inputFile">
+          <v-btn outlined color="blue" @click="openFile()">画像を選択</v-btn>
+          <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
+        </div>
+        <br>
+        <!-- <upload-button></upload-button> -->
         <div class="img_container" v-if="imgPreviewUrl">
           <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
           <svg :width="imgWidth" :height="imgHeight" class="svg_container">
@@ -96,7 +103,11 @@ export default {
       //setFile()でtrueへ
       isVisible : false,
 
-      dialog:false
+      dialog:false,
+
+      items:[
+        {title:'step1',subtitle:'せつめい'},
+        {title:'step2',subtitle:'せつめい2'}]
     }
   },
   methods: {
@@ -216,6 +227,9 @@ export default {
       // リンクをクリックしてダウンロードを開始
       link.click();
     },
+    openFile(){
+      this.$refs.fileInput.click();
+    }
   },
   watch:{
     //det_objectに値が入ればdialogを閉じる

@@ -19,7 +19,7 @@
 1. `docker compose reload {service_name}` でコンテナ再起動
 - http://localhost:8000 : nginx (フロントエンド)
   - http://localhost:8000/api : fastAPIにリバースプロキシ
-  - http://localhost:8001/docs/swagger : Swagger (APIデバッガー)
-  - http://localhost:8001/docs/redoc : ReDoc (APIドキュメント)
+  - http://localhost:8000/docs/swagger : Swagger (APIデバッガー)
+  - http://localhost:8000/docs/redoc : ReDoc (APIドキュメント)
 - http://localhost:8001 : fastAPI
 - http://localhost:5556: Celeryのタスクダッシュボード

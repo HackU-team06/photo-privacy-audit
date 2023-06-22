@@ -62,7 +62,7 @@
         <!-- upload_button -->
         <div class="upload_button" v-if="isVisible">
           <v-btn
-              :disabled="dialog"
+              :disabled="buttonRestricted"
               :loading="dialog"
               color="#108CEB"
               outlined
@@ -85,8 +85,9 @@
               </v-card>
           </v-dialog>
         </div>
+        <h3 v-if="buttonRestricted">↓↓↓文字をぼかした写真をダウンロード↓↓↓</h3>
         <div v-if="canvas">
-          <v-btn outlined color="#108CEB" @click="downloadImage">文字をぼかした写真をダウンロード</v-btn>
+          <v-btn outlined color="#108CEB" @click="downloadImage">ダウンロード</v-btn>
         </div>
         <img class="download_img">
       </div>
@@ -140,8 +141,12 @@ export default {
         "「画像選択」ボタンを押しライブラリから画像を選択",
         "プレビューを確認し「UPLOAD」ボタンを押す",
         "画像解析後に結果(枠・危険度の表示)を確認",
-        "「ぼかした写真をダウンロード」ボタンを押す"
-      ]
+        "「ダウンロード」ボタンを押す"
+      ],
+
+      //UPLOADボタンを非表示にするフラグ
+      //RESPONSE=200でtrueへ
+      buttonRestricted : false
     }
   },
   methods: {
@@ -208,6 +213,7 @@ export default {
         if (res.status == "SUCCESS") {
           this.handleSuccessResponse(res)
           clearInterval(timeId)
+          this.buttonRestricted=true;
         } else if (res.status == "PENDING") {
           console.log("PENDINGなので定期的にAPI叩きます")
         }

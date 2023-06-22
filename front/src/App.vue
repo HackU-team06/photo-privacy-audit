@@ -79,8 +79,8 @@ export default {
 
       canvas: "",
       //uploadされる画像の大きさ情報
-      imgWidth: '',
-      imgHeight: '',
+      imgWidth: '0',
+      imgHeight: '0',
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -135,8 +135,8 @@ export default {
         }
       }
       //upload画像の大きさ格納
-      this.imgWidth = document.getElementById('preview_img').width
-      this.imgHeight = document.getElementById('preview_img').height
+      this.imgWidth = document.getElementById('preview_img')?.width || 0
+      this.imgHeight = document.getElementById('preview_img')?.height || 0
 
       formData.append('req', JSON.stringify(req));
       formData.append("upload_file",this.imgFileInput);

@@ -4,7 +4,7 @@ from typing import cast
 from celery import Celery
 from celery.app.task import Task
 from fastapi.encoders import jsonable_encoder
-from PIL import Image
+from bgproc.proc import processing
 
 from models import AnalyzeResult, AnalyzeResultList, AnalyzeTaskTaskRequestWithPath
 
@@ -29,19 +29,9 @@ def analyze(req_json: dict) -> list:
         list: jsonable_encoder(AnalyzeResultList)
     """
 
-    time.sleep(10)  # 動作確認のためのsleep
-
     try:
         req = AnalyzeTaskTaskRequestWithPath(**req_json)
-        img = Image.open(req.path)
-        results: AnalyzeResultList = [
-            AnalyzeResult(
-                bounding_box={"x": 1, "y": 2, "w": 3, "h": 4},
-                name="sample",
-                description="sample result",
-                rate=1.0,
-            )
-        ]
+        results: AnalyzeResultList = processing(req.path)
     finally:
         if req.path.exists():
             req.path.unlink()

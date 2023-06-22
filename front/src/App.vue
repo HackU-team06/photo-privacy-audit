@@ -5,52 +5,66 @@
     </div>
     <v-content class="main">
       <div id="app">
+        <!-- アプリのロゴ -->
         <img src="./logo.png" width="100%" height="100%">
-        <!-- <h2>特定警察とは？？</h2>
-        <p>普段皆さんが何気なくuploadする画像に特定で使用されそうな要素が無いかをチェックするためのWebアプリケーションです。</p> -->
+        <!-- アプリの説明文 -->
         <v-card color="#F2F7FF">
             <v-card-title>
               特定警察とは？？
+              <v-spacer></v-spacer>
+              <v-btn rounded class="fab" color="#F2F7FF" @click="show = !show">
+                <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </v-btn>
             </v-card-title>
             <v-divider></v-divider>
-            <v-card-text class="text-left">
-              皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
-              このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
-              <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
-              ・危険要素を枠で表示(step3)<br>
-              ・危険度の表示(step3)<br>
-              ・危険要素へモザイクをかけた写真をダウンロード(step4)
-            </v-card-text>
+            <v-expand-transition>
+              <div v-show="show">
+                <v-card-text class="text-left">
+                皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
+                このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
+                <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
+                ・危険要素を枠で表示(step3)<br>
+                ・危険度の表示(step3)<br>
+                      (危険度0:黄，危険度1:オレンジ，危険度2:赤)<br>
+                ・危険要素へモザイクをかけた写真をダウンロード(step4)
+                </v-card-text>
+              </div>
+            </v-expand-transition>
         </v-card>
         <br>
-        <!-- <h2>使い方</h2>
-        <ol>
-          <li>ライブラリから画像を選択</li>
-          <li>プレビューを確認しアップロード</li>
-          <li>画像解析後に結果を確認</li>
-        </ol> -->
+        <!-- 使用手順の説明文 -->
         <v-card color="#F2F7FF">
             <v-card-title>
               使用手順
+              <v-spacer></v-spacer>
+              <v-btn rounded class="fab" color="#F2F7FF" @click="show2 = !show2">
+                <v-icon>{{ show2 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </v-btn>
             </v-card-title>
             <v-divider></v-divider>
-            <v-card-text>
-              <v-list color="#F2F7FF">
-                <v-list-item v-for="(item, index) in explainItems" :key="index">
-                  <v-list-item-content>
-                    <v-list-item-title class="text-left">step{{ index + 1 }}</v-list-item-title>
-                    <v-list-item-subtitle class="text-left">{{ item }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-card-text>
+            <v-expand-transition>
+              <div v-show="show2">
+                <v-card-text>
+                  <v-list color="#F2F7FF">
+                    <v-list-item v-for="(item, index) in explainItems" :key="index">
+                      <v-list-item-content>
+                        <v-list-item-title class="text-left">step{{ index + 1 }}</v-list-item-title>
+                        <v-list-item-subtitle class="text-left">{{ item }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+              </div>
+            </v-expand-transition>
         </v-card>
         <br>
+        <!-- 画像のインプット -->
         <div class="inputFile">
           <v-btn outlined color="#108CEB" @click="openFile()">画像選択</v-btn>
           <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
         </div>
         <br>
+        <!-- プレビューの表示&svgの描画 -->
         <div class="img_container" v-if="imgPreviewUrl">
           <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
           <svg :width="imgWidth" :height="imgHeight" class="svg_container">
@@ -86,8 +100,9 @@
           </v-dialog>
         </div>
         <h3 v-if="buttonRestricted">↓↓↓文字をぼかした写真をダウンロード↓↓↓</h3>
+        <!-- ダウンロードボタン -->
         <div v-if="canvas">
-          <v-btn outlined color="#108CEB" @click="downloadImage">ダウンロード</v-btn>
+          <v-btn outlined color="#108CEB" @click="downloadImage">Download</v-btn>
         </div>
         <img class="download_img">
       </div>
@@ -141,12 +156,18 @@ export default {
         "「画像選択」ボタンを押しライブラリから画像を選択",
         "プレビューを確認し「UPLOAD」ボタンを押す",
         "画像解析後に結果(枠・危険度の表示)を確認",
-        "「ダウンロード」ボタンを押す"
+        "「DOWNLOAD」ボタンを押す"
       ],
 
       //UPLOADボタンを非表示にするフラグ
       //RESPONSE=200でtrueへ
-      buttonRestricted : false
+      buttonRestricted : false,
+
+      //アプリの説明用
+      show:false,
+      
+      //使用手順の説明用
+      show2:false
     }
   },
   methods: {
@@ -303,9 +324,9 @@ export default {
 }
 
 
-img{
+/* img{
   left:10px;
-}
+} */
 
 .download_img{
   display: none;
@@ -315,8 +336,8 @@ img{
   position: relative;
 }
 
+
 .svg_container {
-  left:10px;
   position: absolute;
 }
 </style>

@@ -71,15 +71,12 @@
           persistent
           width="300"
         >
-          <v-card
-            color="primary"
-            dark
-          >
+          <v-card color="white" outlined>
             <v-card-text>
               Please wait...
               <v-progress-linear
                 indeterminate
-                color="white"
+                color="#108CEB"
                 class="mb-0"
               ></v-progress-linear>
             </v-card-text>
@@ -95,7 +92,7 @@
         </div>
         <br>
         <!-- upload_button -->
-        <div class="upload_button" v-if="isVisible">
+        <div class="upload_button" style="text-align: center;" v-if="isVisible">
           <v-btn
               :disabled="buttonRestricted"
               :loading="dialog"
@@ -384,6 +381,7 @@ export default {
 
 
 .svg_container {
+  left:0px;
   position: absolute;
 }
 </style>

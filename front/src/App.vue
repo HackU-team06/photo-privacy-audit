@@ -91,7 +91,7 @@ export default {
       //setFile()でtrueへ
       isVisible : false,
       
-      // heif,heicからjpeghに変換中に表示する
+      // heif,heicからjpegへの変換中に表示する
       isConverting: false
     }
   },
@@ -119,7 +119,7 @@ export default {
         }
 
         this.isVisible = true
-        // 一度解析して別画像を選択したときを考慮して、canvasを空にしておく
+        // 一度解析して別画像を選択したときを考慮して、canvasを初期化
         this.canvas = ""
       }
     },

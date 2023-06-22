@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
+    "heic2any": "^0.0.4",
     "snapsvg": "^0.5.1",
     "snapsvg-cjs": "^0.0.6",
     "vue": "^2.7.14",

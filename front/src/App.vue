@@ -100,18 +100,19 @@ export default {
       const file = e.target.files[0]
 
       if (file) {
-        if (file.type === 'image/heif' || file.type === 'image/heic') {
-          // heif,heicの場合プレビュー表示できないのでjpegに変換する
-
+        if (file.type === 'image/heif' ||
+          file.type === 'image/heic' ||
+          file.name.toLowerCase().endsWith('.heif') ||
+          file.name.toLowerCase().endsWith('.heic')) {
+          // heif,heicの場合プレビュー表示できないのでpngに変換する
           // 変換に時間がかかるのでモーダルを表示
           this.isConverting = true
-          const convertedJpeg = await heic2any({
+          const convertedImage = await heic2any({
             blob: file,
-            toType: 'image/jpeg'
+            toType: 'image/png'
           });
-          // Fileオブジェクトに変換
-          this.imgFileInput = new File([convertedJpeg], 'converted.jpeg', { type: 'image/jpeg' })
-          this.imgPreviewUrl = URL.createObjectURL(convertedJpeg);
+          this.imgFileInput = convertedImage;
+          this.imgPreviewUrl = URL.createObjectURL(convertedImage);
           this.isConverting = false
         } else {
           this.imgFileInput = file

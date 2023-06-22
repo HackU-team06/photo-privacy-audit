@@ -1,4 +1,5 @@
 FROM node:16.15.0
+USER root
 
 WORKDIR /front
 COPY ./package.json /front/package.json

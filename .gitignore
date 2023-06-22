@@ -15,3 +15,4 @@ upload/
 *.pt 
 google_cloud_account_service.json
 .DS_Store
+*.dummy

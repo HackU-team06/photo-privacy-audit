@@ -15,6 +15,27 @@
           画像を選択
           <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
         </label>
+        <!-- 画像変換中のダイアログ -->
+        <v-dialog
+          v-model="isConverting"
+          hide-overlay
+          persistent
+          width="300"
+        >
+          <v-card
+            color="primary"
+            dark
+          >
+            <v-card-text>
+              Please wait...
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
         <div class="img_container" v-if="imgPreviewUrl">
           <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
           <svg :width="imgWidth" :height="imgHeight" class="svg_container">
@@ -36,6 +57,7 @@
 
 <script>
 import axios from "axios"
+import heic2any from "heic2any";
 export default {
   name: 'App',
   data() {
@@ -57,8 +79,8 @@ export default {
 
       canvas: "",
       //uploadされる画像の大きさ情報
-      imgWidth: '',
-      imgHeight: '',
+      imgWidth: '0',
+      imgHeight: '0',
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -67,15 +89,40 @@ export default {
 
       //解析ボタンを画像uploadするまで隠す
       //setFile()でtrueへ
-      isVisible : false
+      isVisible : false,
+      
+      // heif,heicからjpegへの変換中に表示する
+      isConverting: false
     }
   },
   methods: {
-    setFile(e) {
+    async setFile(e) {
       const file = e.target.files[0]
-      this.imgFileInput = file
-      this.imgPreviewUrl = URL.createObjectURL(file)
-      this.isVisible = true
+
+      if (file) {
+        if (file.type === 'image/heif' ||
+          file.type === 'image/heic' ||
+          file.name.toLowerCase().endsWith('.heif') ||
+          file.name.toLowerCase().endsWith('.heic')) {
+          // heif,heicの場合プレビュー表示できないのでpngに変換する
+          // 変換に時間がかかるのでモーダルを表示
+          this.isConverting = true
+          const convertedImage = await heic2any({
+            blob: file,
+            toType: 'image/png'
+          });
+          this.imgFileInput = convertedImage;
+          this.imgPreviewUrl = URL.createObjectURL(convertedImage);
+          this.isConverting = false
+        } else {
+          this.imgFileInput = file
+          this.imgPreviewUrl = URL.createObjectURL(file)
+        }
+
+        this.isVisible = true
+        // 一度解析して別画像を選択したときを考慮して、canvasを初期化
+        this.canvas = ""
+      }
     },
     async uploadFile() {
       let formData = new FormData()
@@ -88,8 +135,8 @@ export default {
         }
       }
       //upload画像の大きさ格納
-      this.imgWidth = document.getElementById('preview_img').width
-      this.imgHeight = document.getElementById('preview_img').height
+      this.imgWidth = document.getElementById('preview_img')?.width || 0
+      this.imgHeight = document.getElementById('preview_img')?.height || 0
 
       formData.append('req', JSON.stringify(req));
       formData.append("upload_file",this.imgFileInput);

@@ -23,7 +23,34 @@
           </svg>
         </div>
         <br>
-        <v-btn v-if="isVisible" @click="uploadFile">解析する</v-btn>
+        <!-- upload_button -->
+        <div class="upload_button" v-if="isVisible">
+          <v-btn
+              :disabled="dialog"
+              :loading="dialog"
+              color="blue"
+              outlined
+              @click="dialog = true; uploadFile();"
+          > Upload </v-btn>
+          <v-dialog
+              v-model="dialog"
+              :scrim="false"
+              persistent
+              width="auto"
+          >
+              <v-card color="white" outlined>
+                  <v-card-text>
+                      analyzing...(Please wait!)
+                      <v-progress-linear
+                          indeterminate
+                          color="blue"
+                      ></v-progress-linear>
+                  </v-card-text>
+              </v-card>
+          </v-dialog>
+        </div>
+        <!-- <v-btn v-if="isVisible" @click="uploadFile">解析する</v-btn>
+        <load-button v-if="isVisible" @click="uploadFile"></load-button> -->
         <div v-if="canvas">
           <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
         </div>
@@ -67,7 +94,9 @@ export default {
 
       //解析ボタンを画像uploadするまで隠す
       //setFile()でtrueへ
-      isVisible : false
+      isVisible : false,
+
+      dialog:false
     }
   },
   methods: {
@@ -187,6 +216,14 @@ export default {
       // リンクをクリックしてダウンロードを開始
       link.click();
     },
+  },
+  watch:{
+    //det_objectに値が入ればdialogを閉じる
+    det_objects(val){
+      if(val.length!=0){
+        this.dialog = false;
+      }
+    }
   }
 }
 </script>

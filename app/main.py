@@ -16,7 +16,9 @@ from models import (
 )
 from tasks import analyze_task
 
-app = FastAPI(debug=bool(os.getenv("DEBUG", False)))
+app = FastAPI(debug=bool(os.getenv("DEBUG", False)),
+              docs_url="/docs/swagger",
+              redoc_url="/docs/redoc")
 
 @app.post("/api/analyze", response_model=AnalyzeTaskStatus)
 async def request_analyze(
@@ -41,7 +43,8 @@ async def request_analyze(
         raise e
 
     # configと画像パスからAnalyzeTaskTaskRequestWithPathを作成
-    req_with_path = AnalyzeTaskTaskRequestWithPath(config=req.config, path=path)
+    req_with_path = AnalyzeTaskTaskRequestWithPath(
+        config=req.config, path=path)
 
     # バックグラウンドタスク analyze_task を作成
     # jsonable_encoderが必要
@@ -74,7 +77,8 @@ async def request_analyze(req: AnalyzeTaskBase64Request) -> AnalyzeTaskStatus:
         raise e
 
     # configと画像パスからAnalyzeTaskTaskRequestWithPathを作成
-    req_with_path = AnalyzeTaskTaskRequestWithPath(config=req.config, path=path)
+    req_with_path = AnalyzeTaskTaskRequestWithPath(
+        config=req.config, path=path)
 
     # バックグラウンドタスク analyze_task を作成
     # jsonable_encoderが必要
@@ -93,5 +97,6 @@ async def check_analyze_status(task_id: str) -> AnalyzeTaskStatus:
     """
 
     task = AsyncResult(task_id)
-    status = AnalyzeTaskStatus(id=task_id, status=task.status, result=task.result)
+    status = AnalyzeTaskStatus(
+        id=task_id, status=task.status, result=task.result)
     return status

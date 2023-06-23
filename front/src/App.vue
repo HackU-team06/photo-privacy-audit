@@ -5,16 +5,65 @@
     </div>
     <v-content class="main">
       <div id="app">
-        <h2>使い方</h2>
-        <ol>
-          <li>ライブラリから画像を選択</li>
-          <li>プレビューを確認しアップロード</li>
-          <li>画像解析後に結果を確認</li>
-        </ol>
-        <label for="file_input">
-          画像を選択
-          <input type="file" id="file_input" accept="image/*, .heic" @change="setFile" />
-        </label>
+        <!-- アプリのロゴ -->
+        <img src="./logo.png" width="100%" height="100%">
+        <!-- アプリの説明文 -->
+        <v-card color="#F2F7FF">
+            <v-card-title>
+              特定警察とは？？
+              <v-spacer></v-spacer>
+              <v-btn rounded class="fab" color="#F2F7FF" @click="show = !show">
+                <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-expand-transition>
+              <div v-show="show">
+                <v-card-text class="text-left">
+                皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
+                このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
+                <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
+                ・危険要素を枠で表示(step3)<br>
+                ・危険度の表示(step3)<br>
+                      (危険度0:黄，危険度1:オレンジ，危険度2:赤)<br>
+                ・危険要素へモザイクをかけた写真をダウンロード(step4)
+                </v-card-text>
+              </div>
+            </v-expand-transition>
+        </v-card>
+        <br>
+        <!-- 使用手順の説明文 -->
+        <v-card color="#F2F7FF">
+            <v-card-title>
+              使用手順
+              <v-spacer></v-spacer>
+              <v-btn rounded class="fab" color="#F2F7FF" @click="show2 = !show2">
+                <v-icon>{{ show2 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-expand-transition>
+              <div v-show="show2">
+                <v-card-text>
+                  <v-list color="#F2F7FF">
+                    <v-list-item v-for="(item, index) in explainItems" :key="index">
+                      <v-list-item-content>
+                        <v-list-item-title class="text-left">step{{ index + 1 }}</v-list-item-title>
+                        <v-list-item-subtitle class="text-left">{{ item }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+              </div>
+            </v-expand-transition>
+        </v-card>
+        <br>
+        <!-- 画像のインプット -->
+        <div class="inputFile">
+          <v-btn outlined color="#108CEB" @click="openFile()">画像選択</v-btn>
+          <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
+        </div>
+        <br>
         <!-- 画像変換中のダイアログ -->
         <v-dialog
           v-model="isConverting"
@@ -22,31 +71,57 @@
           persistent
           width="300"
         >
-          <v-card
-            color="primary"
-            dark
-          >
+          <v-card color="white" outlined>
             <v-card-text>
               Please wait...
               <v-progress-linear
                 indeterminate
-                color="white"
+                color="#108CEB"
                 class="mb-0"
               ></v-progress-linear>
             </v-card-text>
           </v-card>
         </v-dialog>
-        <div class="img_container" v-if="imgPreviewUrl">
-          <img class="img_prev" :src="imgPreviewUrl" id="preview_img" width="100%" height="100%">
-          <svg :width="imgWidth" :height="imgHeight" class="svg_container">
-            <rect v-for="(det_object, index) in det_objects" :key="index"
-              :x="det_object.x" :y="det_object.y" :width="det_object.w" :height="det_object.h" stroke="red" fill="none" stroke-width="2" />
+        <!-- プレビューの表示&svgの描画 -->
+        <div class="img_container" v-if="imgWidth > 0 && imgHeight > 0">
+          <svg :viewBox="`0 0 ${imgWidth} ${imgHeight}`" class="svg_container" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <image v-if="imgPreviewUrl" :href="imgPreviewUrl" x="0" y="0" :width="imgWidth" :height="imgHeight"
+              preserveAspectRatio="none" />
+            <rect v-for="(det_object, index) in det_objects" :key="index" :x="det_object.x" :y="det_object.y"
+              :width="det_object.w" :height="det_object.h" stroke="red" fill="none" stroke-width="2" />
           </svg>
         </div>
         <br>
-        <v-btn v-if="isVisible" @click="uploadFile">解析する</v-btn>
+        <!-- upload_button -->
+        <div class="upload_button" style="text-align: center;" v-if="isVisible">
+          <v-btn
+              :disabled="buttonRestricted"
+              :loading="dialog"
+              color="#108CEB"
+              outlined
+              @click="dialog = true; uploadFile();"
+          > Upload </v-btn>
+          <v-dialog
+              v-model="dialog"
+              :scrim="false"
+              persistent
+              width="auto"
+          >
+              <v-card color="white" outlined>
+                  <v-card-text>
+                      analyzing...(Please wait!)
+                      <v-progress-linear
+                          indeterminate
+                          color="#108CEB"
+                      ></v-progress-linear>
+                  </v-card-text>
+              </v-card>
+          </v-dialog>
+        </div>
+        <h3 v-if="buttonRestricted">↓↓↓文字をぼかした写真をダウンロード↓↓↓</h3>
+        <!-- ダウンロードボタン -->
         <div v-if="canvas">
-          <button @click="downloadImage">文字をぼかした写真をダウンロード</button>
+          <v-btn outlined color="#108CEB" @click="downloadImage">Download</v-btn>
         </div>
         <img class="download_img">
       </div>
@@ -78,9 +153,11 @@ export default {
       detected_objects: {},
 
       canvas: "",
+
       //uploadされる画像の大きさ情報
-      imgWidth: '0',
-      imgHeight: '0',
+      //画像がuploadされれば大きさを更新
+      imgWidth: 0,
+      imgHeight: 0,
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -89,17 +166,43 @@ export default {
 
       //解析ボタンを画像uploadするまで隠す
       //setFile()でtrueへ
-      isVisible : false,
-      
+      isVisible: false,
+
+      //解析中のdialogを開閉するタイミングを規定
+      dialog: false,
+
+      //使い方の説明手順
+      explainItems: [
+        "「画像選択」ボタンを押しライブラリから画像を選択",
+        "プレビューを確認し「UPLOAD」ボタンを押す",
+        "画像解析後に結果(枠・危険度の表示)を確認",
+        "「DOWNLOAD」ボタンを押す"
+      ],
+
+      //UPLOADボタンを非表示にするフラグ
+      //RESPONSE=200でtrueへ
+      buttonRestricted: false,
+
+      //アプリの説明用
+      show: false,
+
+      //使用手順の説明用
+      show2: false,
+
       // heif,heicからjpegへの変換中に表示する
-      isConverting: false
+      isConverting: false,
+
+      // 画像バッファ (imgの代わり)
+      imgBuffer: null
     }
   },
   methods: {
     async setFile(e) {
       const file = e.target.files[0]
-
       if (file) {
+        // 既存のObjectURLを解放する
+        URL.revokeObjectURL(this.imgPreviewUrl);
+
         if (file.type === 'image/heif' ||
           file.type === 'image/heic' ||
           file.name.toLowerCase().endsWith('.heif') ||
@@ -119,7 +222,25 @@ export default {
           this.imgPreviewUrl = URL.createObjectURL(file)
         }
 
+        console.log(this.imgPreviewUrl);
+
+        // 画像のwidth, heightを取得
+        this.imgBuffer = await new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => {
+            resolve(image);
+          };
+          image.onerror = () => {
+            reject("画像の読み込みに失敗しました");
+          };
+          image.src = this.imgPreviewUrl;
+        });
+        this.imgWidth = this.imgBuffer.naturalWidth;
+        this.imgHeight = this.imgBuffer.naturalHeight;
+
+        // 解析ボタンを表示
         this.isVisible = true
+
         // 一度解析して別画像を選択したときを考慮して、canvasを初期化
         this.canvas = ""
       }
@@ -134,12 +255,9 @@ export default {
           baz: "string"
         }
       }
-      //upload画像の大きさ格納
-      this.imgWidth = document.getElementById('preview_img')?.width || 0
-      this.imgHeight = document.getElementById('preview_img')?.height || 0
 
       formData.append('req', JSON.stringify(req));
-      formData.append("upload_file",this.imgFileInput);
+      formData.append("upload_file", this.imgFileInput);
       // ヘッダー
       const config = {
         headers: {
@@ -181,10 +299,11 @@ export default {
         if (res.status == "SUCCESS") {
           this.handleSuccessResponse(res)
           clearInterval(timeId)
+          this.buttonRestricted = true;
         } else if (res.status == "PENDING") {
           console.log("PENDINGなので定期的にAPI叩きます")
         }
-      },1500);
+      }, 1500);
     },
 
     handleSuccessResponse(res) {
@@ -194,15 +313,15 @@ export default {
       this.applyBlurToDetectedCharacters()
       //枠で囲む座標データをdet_objectsにpush
       //形式：{x:100, y:200, w:100, h:100}
-      for(var i=0;i < this.detected_objects.length;i++){
-        this.det_objects.push({'x':Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h)})
+      for (var i = 0; i < this.detected_objects.length; i++) {
+        this.det_objects.push({ 'x': Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h) })
         console.log(this.det_objects[0]);
       }
     },
 
     // 検出した文字をぼかす
     applyBlurToDetectedCharacters() {
-      const previewImage = document.getElementById('preview_img');
+      const previewImage = this.imgBuffer;
       const canvas = document.createElement('canvas');
       this.canvas = canvas
       const context = canvas.getContext('2d');
@@ -216,11 +335,11 @@ export default {
 
       // 文字の位置情報を元にぼかし処理
       this.detected_objects.forEach(obj => {
-        if (obj.name == "letter") {
+        if (obj.name =="letter") {
           const { x, y, w, h } = obj.bounding_box;
           console.log(x, y, w, h);
           context.filter = 'blur(15px)';
-          context.fillRect(x, y, 100, 100);
+          context.fillRect(x, y, w, h);
         }
       });
     },
@@ -235,6 +354,17 @@ export default {
       // リンクをクリックしてダウンロードを開始
       link.click();
     },
+    openFile() {
+      this.$refs.fileInput.click();
+    }
+  },
+  watch: {
+    //det_objectに値が入ればdialogを閉じる
+    det_objects(val) {
+      if (val.length != 0) {
+        this.dialog = false;
+      }
+    }
   }
 }
 </script>
@@ -246,7 +376,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 40px;
 }
 
 #file_input {
@@ -255,25 +385,25 @@ export default {
 
 
 .img-container {
-  top:300px;
-  left:50px;
+  top: 300px;
+  left: 50px;
 }
 
 
-img{
+/* img{
   left:10px;
-}
+} */
 
-.download_img{
+.download_img {
   display: none;
 }
 
-.img_prev{
+
+.img_container {
   position: relative;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.svg_container {
-  left:10px;
-  position: absolute;
-}
 </style>

@@ -159,6 +159,11 @@
         <img class="download_img">
       </div>
     </v-content>
+    <v-footer height="auto" class="custom-footer">
+      <div class="footer-content">
+        <span>&copy; 2023 NemuNemu-Potato-Friends</span>
+      </div>
+    </v-footer>
   </v-app>
 </template>
 
@@ -432,6 +437,11 @@ export default {
 </script>
 
 <style>
+body {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -468,4 +478,7 @@ export default {
   margin-right: auto;
 }
 
+.custom-footer .footer-content {
+  padding: 16px;
+}
 </style>

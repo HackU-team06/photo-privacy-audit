@@ -4,7 +4,7 @@ services:
     build:
       context: ./app
       dockerfile: app.dockerfile
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
     depends_on:
       - worker
     expose:
@@ -62,11 +62,9 @@ services:
     build:
       context: ./front
       dockerfile: front.dockerfile
-    expose:
-     - "8080"
-    restart: always
     volumes:
       - front_dist:/front/dist
+    #command: echo done
     command: npm run build
     # package.json の所有者をrootにすること
     # chown root:root front/package.json

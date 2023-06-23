@@ -4,6 +4,8 @@ flower==2.0.0
 Pillow==9.5.0
 
 # bgproc ------------------------------
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
 
 numpy==1.25.0
 

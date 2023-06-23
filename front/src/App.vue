@@ -103,11 +103,11 @@
         </v-dialog>
         <!-- プレビューの表示&svgの描画 -->
         <div class="img_container" v-if="imgWidth > 0 && imgHeight > 0">
-          <svg :viewBox="`0 0 ${imgWidth} ${imgHeight}`" class="svg_container" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <svg id="svg_container" :viewBox="`0 0 ${imgWidth} ${imgHeight}`" class="svg_container" xmlns:xlink="http://www.w3.org/1999/xlink">
             <image v-if="imgPreviewUrl" :href="imgPreviewUrl" x="0" y="0" :width="imgWidth" :height="imgHeight"
               preserveAspectRatio="none" />
             <rect v-for="(det_object, index) in det_objects" :key="index" :x="det_object.x" :y="det_object.y"
-              :width="det_object.w" :height="det_object.h" :stroke="selectColor(det_object.rate)" fill="none" stroke-width="10" />
+              :width="det_object.w" :height="det_object.h" :stroke="selectColor(det_object.rate)" fill="none" :stroke-width="1 / imgViewScale" />
           </svg>
         </div>
         <br>
@@ -177,6 +177,9 @@ export default {
       //画像がuploadされれば大きさを更新
       imgWidth: 0,
       imgHeight: 0,
+
+      // SVGの `表示上の大きさ / 内容の大きさ` の比率
+      imgViewScale: 1,
 
       //detected_objectsを格納
       //形式例：{'x':100, 'y':100, 'w':200, 'h':100}
@@ -329,8 +332,11 @@ export default {
 
     handleSuccessResponse(res) {
       console.log('width:' + this.imgWidth + ', height:' + this.imgHeight);
-      this.isAnalysisComplete = true
-      this.detected_objects = res.result
+      const svgWidth = document.querySelector('#svg_container')?.clientWidth ?? 0;
+      this.imgViewScale = svgWidth / this.imgWidth;
+      console.log('svgWidth:' + svgWidth + ', imgViewScale:' + this.imgViewScale);
+      this.isAnalysisComplete = true;
+      this.detected_objects = res.result;
       this.applyBlurToDetectedCharacters()
       //枠で囲む座標データをdet_objectsにpush
       //形式：{x:100, y:200, w:100, h:100}

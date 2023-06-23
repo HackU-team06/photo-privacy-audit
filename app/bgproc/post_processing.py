@@ -16,6 +16,16 @@ def evaluate_danger(result_list: list[AnalyzeResult], danger_map: dict[str, int]
     return result_list
 
 
+def result_to_xyxy(result_list: AnalyzeResult) -> tuple[int, int, int, int]:
+    """AnalyzeResultをx1, y1, x2, y2のタプルに変換する"""
+    return (
+        result_list.bounding_box.x,
+        result_list.bounding_box.y,
+        result_list.bounding_box.x + result_list.bounding_box.w,
+        result_list.bounding_box.y + result_list.bounding_box.h,
+    )
+
+
 def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
     """
     x軸方向に近い電柱をマージする
@@ -31,14 +41,11 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
 
         x軸方向に近いとは、x1, x2の差がwidth_aveのthreshold倍より小さいことを指す
         """
-
-        x1_i = pole_i.bounding_box.x
+        
+        x1_i, _, x2_i, _ = result_to_xyxy(pole_i)
+        x1_j, _, x2_j, _ = result_to_xyxy(pole_j)
         w_i = pole_i.bounding_box.w
-        x2_i = x1_i + w_i
-
-        x1_j = pole_j.bounding_box.x
         w_j = pole_j.bounding_box.w
-        x2_j = x1_j + w_j
 
         threshold = (w_i + w_j) / 2 * coef
 
@@ -121,15 +128,8 @@ def find_letter_in_object(
     ) -> bool:
         """objectがletterを含んでいるかどうかを判定する"""
 
-        x1_l = letter.bounding_box.x
-        x2_l = x1_l + letter.bounding_box.w
-        y1_l = letter.bounding_box.y
-        y2_l = y1_l + letter.bounding_box.h
-
-        x1_o = object.bounding_box.x
-        x2_o = x1_o + object.bounding_box.w
-        y1_o = object.bounding_box.y
-        y2_o = y1_o + object.bounding_box.h
+        x1_l, x2_l, y1_l, y2_l = result_to_xyxy(letter)
+        x1_o, x2_o, y1_o, y2_o = result_to_xyxy(object)
 
         x1_larger = max(x1_o, x1_l)
         x2_smaller = min(x2_o, x2_l)

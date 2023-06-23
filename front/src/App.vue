@@ -275,6 +275,9 @@ export default {
         });
         this.imgWidth = this.imgBuffer.naturalWidth;
         this.imgHeight = this.imgBuffer.naturalHeight;
+        //再読込時にdisableをfalseへ
+        this.buttonRestricted = false;
+        this.det_objects = [];
 
         // 解析ボタンを表示
         this.isVisible = true

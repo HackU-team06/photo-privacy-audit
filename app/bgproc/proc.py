@@ -18,55 +18,40 @@ def processing(target_path: str) -> list[AnalyzeResult]:
     custom_yolo = YoloAnalyze(CUSTOM_MODEL)
 
     output = [
-        *original_yolo.run(target_path, 0),
+        *original_yolo.run(target_path),
+        *custom_yolo.run(target_path),
         *gcva.run(target_path),
-        *custom_yolo.run(target_path, 15),
     ]
     print(output)
 
     # ===========post processing===========
-    # parameters
-    list_danger = [
-        {0, 1, 2, 3, 7, 9, 10, 11, 12, 13, 16},
-        {4, 5, 6, 8, 14, 15, 16, 17, 18},
-    ]
-    param1 = 3
-    param2 = 3
-    param = 0.8
-    cls_utilitypole = 18
-    cls_bluesign = 17
-    cls_letter = 14
-    list_labels = [
-        "person",
-        "bicycle",
-        "car",
-        "motorcycle",
-        "airplane",
-        "bus",
-        "train",
-        "trunk",
-        "boat",
-        "traffic light",
-        "fire hydrant",
-        "stop sign",
-        "parking meter",
-        "clock",
-        "letter",
-        "manhole",
-        "sun glass",
-        "blue sign",
-        "utility pole",
-    ]
 
-    output = post_processing.except_person(output)
-    output = post_processing.evaluate_danger(output, list_danger)
-    output = post_processing.detect_duplicate(output, param1, param2)
-    output = post_processing.find_letter_in_BandU(
-        output, param, cls_utilitypole, cls_bluesign, cls_letter
-    )
-    output = post_processing.from_labes_to_objects(output, list_labels)
-    output = post_processing.coord2size(output)
-    # 辞書型にするなら
-    output = post_processing.list2dictionaly(output)
-    output = AnalyzeResultList.parse_obj(output)
+    denger_map = {
+        "bicycle": 1.0,
+        "car": 1.0,
+        "motorcycle": 1.0,
+        "airplane": 2.0,
+        "bus": 2.0,
+        "train": 2.0,
+        "truck": 1.0,
+        "boat": 2.0,
+        "traffic light": 1.0,
+        "fire hydrant": 1.0,
+        "stop sign": 1.0,
+        "parking meter": 1.0,
+        "clock": 1.0,
+        "letter": 2.0,
+        "manhole" : 2.0,
+        "sun glass" : 2.0,
+        "blue sign" : 2.0,
+        "utility pole" : 2.0,
+    }
+
+    output = post_processing.evaluate_danger(output, denger_map)
+    output = post_processing.except_low_rate(output, 0.5)
+
+    # detect_duplicate と find_letter_in_BandU を動くようにしたい
+    output = post_processing.merge_utility_poles(output, 0.4)
+    output = post_processing.find_letter_in_object(output, 0.8, ['blue sign', 'utility pole'])
+
     return output

@@ -333,7 +333,7 @@ export default {
       console.log('width:' + this.imgWidth + ', height:' + this.imgHeight);
       this.isAnalysisComplete = true
       this.detected_objects = res.result
-      this.applyBlurToDetectedCharacters()
+      this.applyBlackPaintToDetectedCharacters()
       //枠で囲む座標データをdet_objectsにpush
       //形式：{x:100, y:200, w:100, h:100}
       for (var i = 0; i < this.detected_objects.length; i++) {
@@ -342,8 +342,8 @@ export default {
       }
     },
 
-    // 検出した文字をぼかす
-    applyBlurToDetectedCharacters() {
+    // 検出した文字を黒塗りにする
+    applyBlackPaintToDetectedCharacters() {
       const previewImage = this.imgBuffer;
       const canvas = document.createElement('canvas');
       this.canvas = canvas
@@ -356,7 +356,7 @@ export default {
       // 画像を描画
       context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
 
-      // 文字の位置情報を元にぼかし処理
+      // 文字の位置情報を元に黒塗り
       this.detected_objects.forEach(obj => {
         if (obj.name =="letter") {
           const { x, y, w, h } = obj.bounding_box;

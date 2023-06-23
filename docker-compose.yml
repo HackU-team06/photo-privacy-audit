@@ -79,6 +79,8 @@ services:
       - ./front:/front
       - /front/node_modules
     command: npm run serve
+    # package.json の所有者をrootにすること
+    # chown root:root front/package.json
 
 volumes:
   celery_redis:

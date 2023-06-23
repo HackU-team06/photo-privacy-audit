@@ -327,8 +327,8 @@ export default {
       const context = canvas.getContext('2d');
 
       // 画像の大きさをキャンバスに設定
-      canvas.width = previewImage.width;
-      canvas.height = previewImage.height;
+      canvas.width = previewImage.naturalWidth;
+      canvas.height = previewImage.naturalHeight;
 
       // 画像を描画
       context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);

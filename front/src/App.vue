@@ -107,7 +107,7 @@
             <image v-if="imgPreviewUrl" :href="imgPreviewUrl" x="0" y="0" :width="imgWidth" :height="imgHeight"
               preserveAspectRatio="none" />
             <rect v-for="(det_object, index) in det_objects" :key="index" :x="det_object.x" :y="det_object.y"
-              :width="det_object.w" :height="det_object.h" :stroke="selectColor(det_object.rate)" fill="none" :stroke-width="2 / imgViewScale" />
+              :width="det_object.w" :height="det_object.h" :stroke="selectColor(det_object.rate)" fill="none" :stroke-width="1 / imgViewScale" />
           </svg>
         </div>
         <br>

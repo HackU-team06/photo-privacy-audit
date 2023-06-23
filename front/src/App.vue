@@ -132,7 +132,7 @@
               </v-card>
           </v-dialog>
         </div>
-        <h3 v-if="buttonRestricted">↓↓↓文字をぼかした写真をダウンロード↓↓↓</h3>
+        <h3 v-if="buttonRestricted">↓↓↓文字を隠した写真をダウンロード↓↓↓</h3>
         <!-- ダウンロードボタン -->
         <div v-if="canvas">
           <v-btn outlined color="#108CEB" @click="downloadImage">Download</v-btn>

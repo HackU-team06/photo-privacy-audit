@@ -3,7 +3,7 @@
     <div class="header">
       <header-comp></header-comp>
     </div>
-    <v-content class="main">
+    <v-main class="main">
       <div id="app">
         <!-- アプリのロゴ -->
         <img src="./logo.png" width="100%" height="100%">
@@ -58,7 +58,7 @@
             </v-expand-transition>
         </v-card>
         <br>
-        <!-- explain -->
+        <!-- 検出されたものの表示 -->
         <v-card color="#F2F7FF">
           <v-card-title>
             検出したモノの一覧
@@ -70,8 +70,14 @@
           <v-divider></v-divider>
           <v-expand-transition>
             <div v-show="show3">
-              <v-card-text class="text-left">
+              <v-card-text v-if="explain_objects.length == 0" class="text-left">
               解析後に結果を表示
+              </v-card-text>
+              <v-card-text v-else class="text-left">
+              検出されたモノ：<br>
+              <ul>
+                <li v-for="ob in explain_objects" :key="ob">{{`${ob.name}（rate:${ob.rate}）`}}</li>
+              </ul>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -158,7 +164,7 @@
         </div>
         <img class="download_img">
       </div>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
@@ -225,13 +231,17 @@ export default {
       //使用手順の説明用
       show2: false,
 
+      //検出されたモノの説明用
       show3: false,
 
       // heif,heicからjpegへの変換中に表示する
       isConverting: false,
 
       // 画像バッファ (imgの代わり)
-      imgBuffer: null
+      imgBuffer: null,
+
+      //検出されたobjを格納、説明に使用
+      explain_objects:[]
     }
   },
   methods: {
@@ -278,6 +288,7 @@ export default {
         //再読込時にdisableをfalseへ
         this.buttonRestricted = false;
         this.det_objects = [];
+        this.explainItems = [];
 
         // 解析ボタンを表示
         this.isVisible = true
@@ -373,6 +384,9 @@ export default {
         // console.log(this.det_objects[i]);
         // console.log(this.selectColor(this.det_objects[i].rate));
       }
+      
+      //ここでdet_objectsの重複チェック
+      this.duplicationCheck();
     },
 
     // 検出した文字を黒塗りにする
@@ -416,6 +430,17 @@ export default {
       if(rate == 2) return 'red'
       else if(rate == 1) return 'orange'
       else return 'yellow'
+    },
+    //det_objectsの重複を削除(explain用)
+    duplicationCheck(){
+      this.explain_objects = this.det_objects.reduce((accumulator, current) => {
+        const duplicateIndex = accumulator.findIndex(obj => obj.name === current.name);
+        if (duplicateIndex === -1) {
+          accumulator.push(current);
+        }
+        return accumulator;
+      }, []);
+      console.log(this.explain_objects);
     }
   },
   watch: {

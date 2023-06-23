@@ -31,7 +31,7 @@ def analyze(req_json: dict) -> list:
 
     try:
         req = AnalyzeTaskTaskRequestWithPath(**req_json)
-        results: AnalyzeResultList = processing(req.path)
+        results: AnalyzeResultList = processing(str(req.path))
     finally:
         if req.path.exists():
             req.path.unlink()

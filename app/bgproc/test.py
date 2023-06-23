@@ -3,8 +3,8 @@ from .import YoloAnalyze
 from .import GcvaAnalyze
 from models import AnalyzeResult, AnalyzeResultList
 
-#from . import post_processing
-from . import post_processing2 as post_processing
+from . import post_processing
+
 
 def proc_test() -> list[AnalyzeResult]:
     # 身元証明書のjson path
@@ -26,13 +26,6 @@ def proc_test() -> list[AnalyzeResult]:
     print(output)
 
     # ===========post processing===========
-    # parameters
-    list_danger = [{0, 1, 2, 3, 7, 9, 10, 11, 12, 13, 16},
-                   {4, 5, 6, 8, 14, 15, 16, 17, 18}
-                   ]
-    param1 = 3
-    param2 = 3
-    param = 0.8
 
     denger_map = {
         "bicycle": 1.0,

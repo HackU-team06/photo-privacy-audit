@@ -26,7 +26,7 @@ def result_to_xyxy(result_list: AnalyzeResult) -> tuple[int, int, int, int]:
     )
 
 
-def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
+def merge_utility_poles(result_list: list[AnalyzeResult], threshold: float):
     """
     x軸方向に近い電柱をマージする
 
@@ -34,12 +34,12 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
     """
 
     def is_x_axis_close(
-        pole_i: AnalyzeResult, pole_j: AnalyzeResult, coef: float
+        pole_i: AnalyzeResult, pole_j: AnalyzeResult, threshold: float
     ) -> bool:
         """
         2つの電柱がx軸方向に近いかどうかを判定する
 
-        x軸方向に近いとは、x1, x2の差がwidth_aveのthreshold倍より小さいことを指す
+        x軸方向に近いとは、x1, x2の差が width_ave * threshold より小さいことを指す
         """
         
         x1_i, _, x2_i, _ = result_to_xyxy(pole_i)
@@ -47,21 +47,21 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
         w_i = pole_i.bounding_box.w
         w_j = pole_j.bounding_box.w
 
-        threshold = (w_i + w_j) / 2 * coef
+        v = (w_i + w_j) / 2 * threshold
 
-        return abs(x1_i - x1_j) < threshold and abs(x2_i - x2_j) < threshold
+        return max(abs(x1_i - x1_j), abs(x2_i - x2_j)) < v
 
     def merge(pole_i: AnalyzeResult, pole_j: AnalyzeResult) -> AnalyzeResult:
-        x1 = min(pole_i.bounding_box.x, pole_j.bounding_box.x)
-        x2 = max(
-            pole_i.bounding_box.x + pole_i.bounding_box.w,
-            pole_j.bounding_box.x + pole_j.bounding_box.w,
-        )
-        y1 = min(pole_i.bounding_box.y, pole_j.bounding_box.y)
-        y2 = max(
-            pole_i.bounding_box.y + pole_i.bounding_box.h,
-            pole_j.bounding_box.y + pole_j.bounding_box.h,
-        )
+        """pole_iとpole_jをマージする"""
+
+        x1_i, x2_i, y1_i, y2_i = result_to_xyxy(pole_i)
+        x1_j, x2_j, y1_j, y2_j = result_to_xyxy(pole_j)
+
+        x1 = min(x1_i, x1_j)
+        x2 = max(x2_i, x2_j)
+        y1 = min(y1_i, y1_j)
+        y2 = max(y2_i, y2_j)
+
         pole_i.bounding_box.x = x1
         pole_i.bounding_box.y = y1
         pole_i.bounding_box.w = x2 - x1
@@ -86,7 +86,7 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
         update_flag = False
 
         for pole_j in pole_results:
-            if is_x_axis_close(pole_i, pole_j, coef):
+            if is_x_axis_close(pole_i, pole_j, threshold):
                 # x軸方向に近い場合はマージ
                 pole_i = merge(pole_i, pole_j)
                 update_flag = True
@@ -105,12 +105,10 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
     return other_results + merged_pole_results
 
 
-# find_letter_jn_BandU
-
 
 # thretholdは0.8ぐらいを想定
 def find_letter_in_object(
-    result_list: list[AnalyzeResult], threshold: float, target_names: list[str]
+    result_list: list[AnalyzeResult], threshold: float, target_names: Iterable[str]
 ) -> list[AnalyzeResult]:
     """
     文字と物体の重なりを判定し、重なっている場合はrateを変更する

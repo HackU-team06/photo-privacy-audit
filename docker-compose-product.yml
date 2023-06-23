@@ -1,0 +1,81 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./app
+      dockerfile: server.dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - worker
+      - dashboard
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    volumes:
+      - upload_tmp:/app/upload
+
+  worker:
+    build:
+      context: ./app
+      dockerfile: worker.dockerfile
+    depends_on:
+      - redis
+    command: celery --app=tasks.celery worker --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - upload_tmp:/app/upload
+
+  dashboard:
+    build:
+      context: ./app
+      dockerfile: worker.dockerfile
+    depends_on:
+      - redis
+    command: celery --app=tasks.celery flower --port=5555
+    ports:
+      - 5556:5555
+    env_file:
+      - .env
+    volumes:
+      - upload_tmp:/app/upload
+  
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 8000:80
+    depends_on:
+      - server
+      - front
+    volumes:
+      - front_dist:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
+
+  redis:
+    image: redis:latest
+    volumes:
+      - celery_redis:/data
+
+  front:
+    build:
+      context: ./front
+      dockerfile: front.dockerfile
+    expose:
+     - "8080"
+    restart: always
+    volumes:
+      - front_dist:/front/dist
+    command: npm run build
+    # package.json の所有者をrootにすること
+    # chown root:root front/package.json
+
+volumes:
+  celery_redis:
+    driver: local
+  upload_tmp:
+    driver: local
+  front_dist:
+    driver: local
+

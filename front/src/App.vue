@@ -373,6 +373,8 @@ export default {
         // console.log(this.det_objects[i]);
         // console.log(this.selectColor(this.det_objects[i].rate));
       }
+      if (this.det_objects.length == 0) alert("特定される危険のある物体は検出されませんでした")
+      this.dialog = false;
     },
 
     // 検出した文字を黒塗りにする

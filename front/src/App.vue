@@ -219,7 +219,7 @@ export default {
         if (obj.name == "letter") {
           const { x, y, w, h } = obj.bounding_box;
           console.log(x, y, w, h);
-          context.filter = 'blur(5px)';
+          context.filter = 'blur(15px)';
           context.fillRect(x, y, 100, 100);
         }
       });

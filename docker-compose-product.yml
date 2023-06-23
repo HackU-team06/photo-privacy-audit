@@ -64,7 +64,6 @@ services:
       dockerfile: front.dockerfile
     expose:
      - "8080"
-    restart: always
     volumes:
       - front_dist:/front/dist
     command: npm run build

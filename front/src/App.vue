@@ -335,11 +335,12 @@ export default {
 
       // 文字の位置情報を元にぼかし処理
       this.detected_objects.forEach(obj => {
-        const { x, y, w, h } = obj.bounding_box;
-        console.log(x, y, w, h);
-
-        context.filter = 'blur(15px)';
-        context.fillRect(x, y, 100, 100);
+        if (obj.name =="letter") {
+          const { x, y, w, h } = obj.bounding_box;
+          console.log(x, y, w, h);
+          context.filter = 'blur(15px)';
+          context.fillRect(x, y, w, h);
+        }
       });
     },
     downloadImage() {
@@ -395,6 +396,14 @@ export default {
 
 .download_img {
   display: none;
+}
+
+
+.img_container {
+  position: relative;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 </style>

@@ -437,7 +437,7 @@ export default {
 </script>
 
 <style>
-body {
+.main {
   max-width: 1000px;
   margin: 0 auto;
 }

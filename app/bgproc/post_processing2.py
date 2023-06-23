@@ -7,6 +7,7 @@ def except_low_rate(result_list: list[AnalyzeResult], threshold: float):
     """rateがthreshold未満の要素を削除する"""
     return [res for res in result_list if res.rate >= threshold]
 
+
 def evaluate_danger(result_list: list[AnalyzeResult], danger_map: dict[str, int]):
     """danger_mapに基づき、result_listの各要素のrateを変更する"""
     for res in result_list:
@@ -57,10 +58,22 @@ def check(coorL, coorB, param):
     return False
 
 
-# paramは0.8ぐらいを想定
+# thretholdは0.8ぐらいを想定
 def find_letter_in_BandU(
-    result_list, param, cls_utility_pole, cls_bule_sign, cls_letter
-):
+    result_list: list[AnalyzeResult], threthold: float, target_names: list[str]
+) -> list[AnalyzeResult]:
+    """
+    文字と物体の重なりを判定し、重なっている場合はrateを変更する
+
+    Args:
+        result_list (list[AnalyzeResult]): 物体検出の結果
+        threthold (float): 重なりの閾値
+        target_names (list[str]): 重なりを判定する物体の名前
+    """
+
+    def object_contains_letter(object: AnalyzeResult, letter: AnalyzeResult, threthold: float) -> bool:
+        """objectがletterを含んでいるかどうかを判定する"""
+
     coordinate_utilitypole = []
     Coordinate_bulesign = []
     Coordinate_letter = []
@@ -99,4 +112,3 @@ def from_labes_to_objects(result_list, list_labels):
     for i in range(len(result_list)):
         result_list[i][0] = list_labels[result_list[i][0]]
     return result_list
-

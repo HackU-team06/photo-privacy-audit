@@ -99,46 +99,6 @@ def merge_utility_poles(result_list: list[AnalyzeResult], coef: float):
 
 
 # find_letter_jn_BandU
-# 下の　find_letter_in_BandUを使ってね
-
-
-# 文字と被っているかチェック
-def check(coorL, coorB, param):
-    x1_L = coorL[1]
-    y1_L = coorL[2]
-    x2_L = coorL[3]
-    y2_L = coorL[4]
-
-    x1_B = coorB[1]
-    y1_B = coorB[2]
-    x2_B = coorB[3]
-    y2_B = coorB[4]
-
-    # 完全に文字が中に埋まってる場合
-    if x1_B < x1_L and y1_B < y1_L and x2_B > y2_L and y2_B:
-        return True
-
-    width_L = abs(x2_L - x1_L)
-    height_L = abs(y2_L - y1_L)
-
-    width_B = abs(x2_B - x1_B)
-    height_B = abs(y2_B - y1_B)
-
-    x1_larger = max(x1_B, x1_L)
-    x2_smaller = min(x2_B, x2_L)
-    y1_larger = min(y1_B, y1_L)
-    y2_smaller = min(y2_B, y2_L)
-
-    if x2_smaller - x1_larger < 0 or y2_smaller - y1_larger < 0:
-        return False
-
-    area_cover = (x2_smaller - x1_larger) * (y2_smaller - y1_larger)
-    area_letter = abs(x1_L - x2_L) * abs(y1_L - y2_L)
-
-    if area_cover / area_letter > param:
-        return True
-
-    return False
 
 
 # thretholdは0.8ぐらいを想定
@@ -157,44 +117,58 @@ def find_letter_in_BandU(
     def object_contains_letter(
         object: AnalyzeResult, letter: AnalyzeResult, threthold: float
     ) -> bool:
-        """objectがletterを含んでいるかどうかを判定する"""
-        return True
+        """objectがletterを含んでいるかどうかを判定する"""        
+        
+        x1_l = letter.x
+        x2_l = x1_l + letter.w
+        y1_l = letter.y
+        y2_l = y1_l + letter.h
 
-    res = result_list[0]
-    x1 = res.bounding_box.x
-    x2 = x1 + res.bounding_box.w
+        x1_o = object.x
+        x2_o = x1_l + object.w
+        y1_o = object.y
+        y2_o = y1_l + object.h
 
-    target_names = ["blue sign", "utility pole"]
-    res.rate += 1.0
 
-    coordinate_utilitypole = []
-    Coordinate_bulesign = []
-    Coordinate_letter = []
-    for output in result_list:
-        if output[0] == cls_utility_pole:
-            coordinate_utilitypole.append(output)
-        if output[0] == cls_bule_sign:
-            Coordinate_bulesign.append(output)
-        if output[0] == cls_letter:
-            Coordinate_letter.append(output)
+        x1_larger  = max(x1_o,x1_l)
+        x2_smaller = min(x2_o,x2_l)
+        y1_larger  = min(y1_o,y1_l)
+        y2_smaller = min(y2_o,y2_l)
 
-    for coorL in Coordinate_letter:
-        for coorB in Coordinate_bulesign:
-            if check(coorL, coorB, param):
-                for output in result_list:
-                    if output == coorL:
-                        output[5] = 2
-                    if output == coorB:
-                        output[5] = 2
+        area_letter = letter.w * letter.h
+        area_cover = (x2_smaller-x1_larger)*(y2_smaller-y1_larger)
 
-    for coorL in Coordinate_letter:
-        for coorU in coordinate_utilitypole:
-            if check(coorL, coorU, param):
-                for output in result_list:
-                    if output == coorL:
-                        output[5] = 2
-                    if output == coorU:
-                        output[5] = 2
+        #被っているか判定
+        if(x2_smaller-x1_larger<0 or y2_smaller-y1_larger<0):
+            return False
+
+        
+        if(area_cover >= area_letter*threshold):
+            return True
+
+
+        
+
+    #　それぞれのターゲットに該当する座標を保持する辞書を作成
+    Coordinate_dict={}
+    for name in target_names:
+        Coordinate[name]=[]
+
+    #辞書にデータを格納
+    for res in result_list:
+        if res.name in target_names:
+            Coordinate[res.name].append(res)
+
+    for res in resut_list:
+        if(res.name != "letter"):
+            continue
+        
+        for k in Coordinate_dict.keys():
+            for v in Coordinate_dict[k]:
+                if(object_contains_letter(v,res,threshold)):
+                    res.rate += 1.0
+                    v.rate += 1.0
+     
 
     return result_list
 

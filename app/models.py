@@ -61,7 +61,8 @@ class AnalyzeResult(BaseModel):
     bounding_box: BoundingBox = Field(..., description="バウンディングボックス")
     name: str = Field(..., description="名前(ラベル, 種類)")
     description: str = Field(..., description="説明")
-    rate: float = Field(..., description="危険度")
+    rate: float = Field(0, description="危険度")
+    confidence: float = Field(1.0, description="信頼度")
 
 
 class AnalyzeResultList(BaseModel):

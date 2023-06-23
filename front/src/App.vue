@@ -9,27 +9,27 @@
         <img src="./logo.png" width="100%" height="100%">
         <!-- アプリの説明文 -->
         <v-card color="#F2F7FF">
-            <v-card-title>
-              特定警察とは？？
-              <v-spacer></v-spacer>
-              <v-btn rounded class="fab" color="#F2F7FF" @click="show = !show">
-                <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-divider></v-divider>
-            <v-expand-transition>
-              <div v-show="show">
-                <v-card-text class="text-left">
-                皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
-                このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
-                <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
-                ・危険要素を枠で表示(step3)<br>
-                ・危険度の表示(step3)<br>
-                      (危険度0:黄，危険度1:オレンジ，危険度2:赤)<br>
-                ・危険要素へモザイクをかけた写真をダウンロード(step4)
-                </v-card-text>
-              </div>
-            </v-expand-transition>
+          <v-card-title>
+            特定警察とは？？
+            <v-spacer></v-spacer>
+            <v-btn rounded class="fab" color="#F2F7FF" @click="show = !show">
+              <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-expand-transition>
+            <div v-show="show">
+              <v-card-text class="text-left">
+              皆さんが普段、SNSへアップロードする写真は電柱やマンホールの映り込みによって、特定される危険に晒されています！
+              このWebアプリケーションを使って、特定される要素と写真の危険度を把握しましょう！<br>
+              <a style="color:gray; font-weight: bold;">このアプリケーションでできること：</a><br>
+              ・危険要素を枠で表示(step3)<br>
+              ・危険度の表示(step3)<br>
+                    (危険度0:黄，危険度1:オレンジ，危険度2:赤)<br>
+              ・危険要素へモザイクをかけた写真をダウンロード(step4)
+              </v-card-text>
+            </div>
+          </v-expand-transition>
         </v-card>
         <br>
         <!-- 使用手順の説明文 -->
@@ -56,6 +56,25 @@
                 </v-card-text>
               </div>
             </v-expand-transition>
+        </v-card>
+        <br>
+        <!-- explain -->
+        <v-card color="#F2F7FF">
+          <v-card-title>
+            検出したモノの一覧
+            <v-spacer></v-spacer>
+            <v-btn rounded class="fab" color="#F2F7FF" @click="show3 = !show3">
+              <v-icon>{{ show3 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-expand-transition>
+            <div v-show="show3">
+              <v-card-text class="text-left">
+              解析後に結果を表示
+              </v-card-text>
+            </div>
+          </v-expand-transition>
         </v-card>
         <br>
         <!-- 画像のインプット -->
@@ -88,7 +107,7 @@
             <image v-if="imgPreviewUrl" :href="imgPreviewUrl" x="0" y="0" :width="imgWidth" :height="imgHeight"
               preserveAspectRatio="none" />
             <rect v-for="(det_object, index) in det_objects" :key="index" :x="det_object.x" :y="det_object.y"
-              :width="det_object.w" :height="det_object.h" stroke="red" fill="none" stroke-width="2" />
+              :width="det_object.w" :height="det_object.h" :stroke="selectColor(det_object.rate)" fill="none" stroke-width="10" />
           </svg>
         </div>
         <br>
@@ -188,6 +207,8 @@ export default {
 
       //使用手順の説明用
       show2: false,
+
+      show3: false,
 
       // heif,heicからjpegへの変換中に表示する
       isConverting: false,
@@ -314,8 +335,12 @@ export default {
       //枠で囲む座標データをdet_objectsにpush
       //形式：{x:100, y:200, w:100, h:100}
       for (var i = 0; i < this.detected_objects.length; i++) {
-        this.det_objects.push({ 'x': Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y), 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h) })
-        console.log(this.det_objects[0]);
+        this.det_objects.push({ 'x': Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y),
+                                'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h), 
+                                'name':this.detected_objects[i].name, 'rate': this.detected_objects[i].rate});
+        console.log(this.det_objects[i]);
+        console.log(this.selectColor(this.det_objects[i].rate));
+        // console.log('name:'+this.detected_objects[i].name+',description:'+this.detected_objects[i].description+',rate:'+this.detected_objects[i].rate);
       }
     },
 
@@ -356,6 +381,11 @@ export default {
     },
     openFile() {
       this.$refs.fileInput.click();
+    },
+    selectColor(rate){
+      if(rate == 2) return 'red'
+      else if(rate == 1) return 'orange'
+      else return 'yellow'
     }
   },
   watch: {

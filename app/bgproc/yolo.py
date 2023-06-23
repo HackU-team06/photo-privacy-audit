@@ -12,9 +12,9 @@ class YoloAnalyze(BackgroundAnalyzeProcessBase):
 
     def run(self, image_path: str) -> list[AnalyzeResult]:
         # モデルの関数作成(YOLO)
-        model = YOLO(Image.open(self.model_path))
+        model = YOLO(self.model_path)
         # YOLO-customから座標データを抽出(YOLO)
-        result: Results = model(image_path, conf=0.25, iou=0.7)[0]
+        result: Results = model(Image.open(image_path), conf=0.25, iou=0.7)[0]
         # 後のオブジェクト名出力などのため
         names: dict[int, str] = result.names
         classes = result.boxes.cls

@@ -344,9 +344,8 @@ export default {
         this.det_objects.push({ 'x': Number(this.detected_objects[i].bounding_box.x), 'y': Number(this.detected_objects[i].bounding_box.y),
                                 'w': Number(this.detected_objects[i].bounding_box.w), 'h': Number(this.detected_objects[i].bounding_box.h), 
                                 'name':this.detected_objects[i].name, 'rate': this.detected_objects[i].rate});
-        console.log(this.det_objects[i]);
-        console.log(this.selectColor(this.det_objects[i].rate));
-        // console.log('name:'+this.detected_objects[i].name+',description:'+this.detected_objects[i].description+',rate:'+this.detected_objects[i].rate);
+        // console.log(this.det_objects[i]);
+        // console.log(this.selectColor(this.det_objects[i].rate));
       }
     },
 

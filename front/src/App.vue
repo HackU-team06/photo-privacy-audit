@@ -61,7 +61,21 @@
         <!-- 画像のインプット -->
         <div class="inputFile">
           <v-btn outlined color="#108CEB" @click="openFile()">画像選択</v-btn>
-          <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
+          <input  type="file"
+                  id="file_input"
+                  accept="image/png,
+                          image/jpeg,
+                          image/bmp,
+                          image/webp,
+                          image/gif,
+                          image/heif,
+                          image/heic,
+                          .heif,
+                          .heic"
+                  style="display: none"
+                  ref="fileInput"
+                  @change="setFile"
+          />
         </div>
         <br>
         <!-- 画像変換中のダイアログ -->

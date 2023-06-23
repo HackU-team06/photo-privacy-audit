@@ -61,7 +61,21 @@
         <!-- 画像のインプット -->
         <div class="inputFile">
           <v-btn outlined color="#108CEB" @click="openFile()">画像選択</v-btn>
-          <input type="file" id="file_input" accept="image/*, .heic" style="display: none" ref="fileInput" @change="setFile" />
+          <input  type="file"
+                  id="file_input"
+                  accept="image/png,
+                          image/jpeg,
+                          image/bmp,
+                          image/webp,
+                          image/gif,
+                          image/heif,
+                          image/heic,
+                          .heif,
+                          .heic"
+                  style="display: none"
+                  ref="fileInput"
+                  @change="setFile"
+          />
         </div>
         <br>
         <!-- 画像変換中のダイアログ -->
@@ -118,7 +132,7 @@
               </v-card>
           </v-dialog>
         </div>
-        <h3 v-if="buttonRestricted">↓↓↓文字をぼかした写真をダウンロード↓↓↓</h3>
+        <h3 v-if="buttonRestricted">↓↓↓文字を隠した写真をダウンロード↓↓↓</h3>
         <!-- ダウンロードボタン -->
         <div v-if="canvas">
           <v-btn outlined color="#108CEB" @click="downloadImage">Download</v-btn>
@@ -288,20 +302,29 @@ export default {
       }
     },
     async callApiAnalyze() {
-      const res = await axios.get("/api/analyze/" + this.taskId)
-      return res.data
+      try {
+        const res = await axios.get("/api/analyze/" + this.taskId)
+        return res.data
+      } catch (e) {
+        alert("エラーが発生しました。ページをリロードします。")
+        location.reload()
+      }
     },
 
     // ステータスがSUCCESSになるまでAPIを叩く
     async pollAPIAnalyze() {
       const timeId = setInterval(async () => {
-        const res = await this.callApiAnalyze()
-        if (res.status == "SUCCESS") {
-          this.handleSuccessResponse(res)
+        try {
+          const res = await this.callApiAnalyze()
+          if (res.status == "SUCCESS") {
+            this.handleSuccessResponse(res)
+            clearInterval(timeId)
+            this.buttonRestricted = true;
+          } else if (res.status == "PENDING") {
+            console.log("PENDINGなので定期的にAPI叩きます")
+          }
+        } catch (e) {
           clearInterval(timeId)
-          this.buttonRestricted = true;
-        } else if (res.status == "PENDING") {
-          console.log("PENDINGなので定期的にAPI叩きます")
         }
       }, 1500);
     },
@@ -310,7 +333,7 @@ export default {
       console.log('width:' + this.imgWidth + ', height:' + this.imgHeight);
       this.isAnalysisComplete = true
       this.detected_objects = res.result
-      this.applyBlurToDetectedCharacters()
+      this.applyBlackPaintToDetectedCharacters()
       //枠で囲む座標データをdet_objectsにpush
       //形式：{x:100, y:200, w:100, h:100}
       for (var i = 0; i < this.detected_objects.length; i++) {
@@ -319,8 +342,8 @@ export default {
       }
     },
 
-    // 検出した文字をぼかす
-    applyBlurToDetectedCharacters() {
+    // 検出した文字を黒塗りにする
+    applyBlackPaintToDetectedCharacters() {
       const previewImage = this.imgBuffer;
       const canvas = document.createElement('canvas');
       this.canvas = canvas
@@ -333,12 +356,11 @@ export default {
       // 画像を描画
       context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
 
-      // 文字の位置情報を元にぼかし処理
+      // 文字の位置情報を元に黒塗り
       this.detected_objects.forEach(obj => {
         if (obj.name =="letter") {
           const { x, y, w, h } = obj.bounding_box;
           console.log(x, y, w, h);
-          context.filter = 'blur(15px)';
           context.fillRect(x, y, w, h);
         }
       });

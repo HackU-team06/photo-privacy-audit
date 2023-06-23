@@ -77,8 +77,7 @@ services:
     volumes:
       - .:/repo
       - ./front:/front
-      - type: tmpfs
-        target: /front/node_modules
+      - /front/node_modules
     command: npm run serve
     # package.json の所有者をrootにすること
     # chown root:root front/package.json
@@ -87,6 +86,4 @@ volumes:
   celery_redis:
     driver: local
   upload_tmp:
-    driver: local
-  node_modules:
     driver: local

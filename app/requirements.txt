@@ -1,23 +1,22 @@
-redis
-celery
-flower
-pillow
+redis==4.5.5
+celery==5.3.1
+flower==2.0.0
+Pillow==9.5.0
 
 # bgproc ------------------------------
 
-numpy
+numpy==1.25.0
 
-matplotlib>=3.2.2
-opencv-python>=4.6.0
-Pillow>=7.1.2
-PyYAML>=5.3.1
-requests>=2.23.0
-scipy>=1.4.1
-torch>=1.7.0
-torchvision>=0.8.1
-tqdm>=4.64.0
+matplotlib==3.7.1
+opencv-python==4.7.0.72
+PyYAML==6.0
+requests==2.31.0
+scipy==1.10.1
+torch==2.0.1
+torchvision==0.15.2
+tqdm==4.65.0
 
-psutil
-ultralytics
+psutil==5.9.5
+ultralytics==8.0.121
 
-google-cloud-vision
+google-cloud-vision==3.4.3

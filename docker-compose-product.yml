@@ -7,7 +7,6 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - worker
-      - dashboard
     expose:
       - "8000"
     env_file:
@@ -33,6 +32,7 @@ services:
       dockerfile: worker.dockerfile
     depends_on:
       - redis
+      - worker
     command: celery --app=tasks.celery flower --port=5555
     ports:
       - 5556:5555

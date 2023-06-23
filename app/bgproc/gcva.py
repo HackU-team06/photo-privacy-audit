@@ -25,7 +25,8 @@ class GcvaAnalyze(BackgroundAnalyzeProcessBase):
 
         # Performs label detection on the image file(GCVA)
         response = client.document_text_detection(
-            image=image, image_context={"language_hints": ["ja"]}
+            image=image,
+            image_context={'language_hints': ['ja']}
         )
 
         # レスポンスからテキストデータを抽出(GCVA)

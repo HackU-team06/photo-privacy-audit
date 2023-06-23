@@ -208,19 +208,20 @@ export default {
       const context = canvas.getContext('2d');
 
       // 画像の大きさをキャンバスに設定
-      canvas.width = previewImage.width;
-      canvas.height = previewImage.height;
+      canvas.width = previewImage.naturalWidth;
+      canvas.height = previewImage.naturalHeight;
 
       // 画像を描画
       context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
 
       // 文字の位置情報を元にぼかし処理
       this.detected_objects.forEach(obj => {
-        const { x, y, w, h } = obj.bounding_box;
-        console.log(x, y, w, h);
-
-        context.filter = 'blur(15px)';
-        context.fillRect(x, y, 100, 100);
+        if (obj.name == "letter") {
+          const { x, y, w, h } = obj.bounding_box;
+          console.log(x, y, w, h);
+          context.filter = 'blur(15px)';
+          context.fillRect(x, y, 100, 100);
+        }
       });
     },
     downloadImage() {

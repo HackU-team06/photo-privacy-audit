@@ -69,6 +69,9 @@ class AnalyzeResultList(BaseModel):
     """解析結果リスト"""
 
     __root__: list[AnalyzeResult]
+    
+    def __iter__(self):
+        return iter(self.__root__)
 
 
 TaskStatusLiteral = Literal[

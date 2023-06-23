@@ -2,7 +2,8 @@ from models import AnalyzeResult
 from .base import BackgroundAnalyzeProcessBase
 from ultralytics import YOLO
 from ultralytics.yolo.engine.results import Results, Boxes
-
+from typing import Iterable
+from PIL import Image
 
 
 class YoloAnalyze(BackgroundAnalyzeProcessBase):
@@ -11,15 +12,13 @@ class YoloAnalyze(BackgroundAnalyzeProcessBase):
 
     def run(self, image_path: str) -> list[AnalyzeResult]:
         # モデルの関数作成(YOLO)
-        model = YOLO(self.model_path)
+        model = YOLO(Image.open(self.model_path))
         # YOLO-customから座標データを抽出(YOLO)
         result: Results = model(image_path, conf=0.25, iou=0.7)[0]
         # 後のオブジェクト名出力などのため
         names: dict[int, str] = result.names
         classes = result.boxes.cls
-        boxes = result.boxes
-
-        print(list(names.values()))
+        boxes: Iterable[Boxes] = result.boxes
 
         result_list = []
         for box, cls_idx in zip(boxes, classes):

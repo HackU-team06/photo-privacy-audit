@@ -3,11 +3,10 @@ services:
   server:
     build:
       context: ./app
-      dockerfile: server.dockerfile
+      dockerfile: app.dockerfile
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - worker
-      - dashboard
     ports:
       - 8001:8000
     environment:
@@ -22,7 +21,7 @@ services:
   worker:
     build:
       context: ./app
-      dockerfile: worker.dockerfile
+      dockerfile: app.dockerfile
     depends_on:
       - redis
     command: celery --app=tasks.celery worker --loglevel=info
@@ -36,9 +35,10 @@ services:
   dashboard:
     build:
       context: ./app
-      dockerfile: worker.dockerfile
+      dockerfile: app.dockerfile
     depends_on:
       - redis
+      - worker
     command: celery --app=tasks.celery flower --port=5555
     ports:
       - 5556:5555

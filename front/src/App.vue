@@ -164,7 +164,12 @@
         </div>
         <img class="download_img">
       </div>
-    </v-main>
+    </v->
+    <v-footer height="auto" class="custom-footer">
+      <div class="footer-content">
+        <span>&copy; 2023 NemuNemu-Potato-Friends</span>
+      </div>
+    </v-footer>
   </v-app>
 </template>
 
@@ -383,10 +388,12 @@ export default {
                                 'name':this.detected_objects[i].name, 'rate': this.detected_objects[i].rate});
         // console.log(this.det_objects[i]);
         // console.log(this.selectColor(this.det_objects[i].rate));
-      }
-      
+      } 
       //ここでdet_objectsの重複チェック
       this.duplicationCheck();
+      
+      if (this.det_objects.length == 0) alert("特定される危険のある物体は検出されませんでした")
+      this.dialog = false;
     },
 
     // 検出した文字を黒塗りにする
@@ -455,6 +462,11 @@ export default {
 </script>
 
 <style>
+body {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -491,4 +503,7 @@ export default {
   margin-right: auto;
 }
 
+.custom-footer .footer-content {
+  padding: 16px;
+}
 </style>

@@ -13,7 +13,7 @@
                             <v-icon>{{menuItem.icon}}</v-icon>
                         </v-list-item-icon>
                         <v-list-item>
-                            <a v-if="menuItem.name=='home'" v-bind:href="`${menuItem.link}`">{{menuItem.name}}</a>
+                            <a v-if="menuItem.name=='Home'" v-bind:href="`${menuItem.link}`">{{menuItem.name}}</a>
                             <a v-else v-bind:href="`${menuItem.link}`" target="_blank">{{menuItem.name}}</a>
                         </v-list-item>
                     </v-list-item>
@@ -34,17 +34,17 @@
                     name: "Home",
                     link: "/",
                 },{
-                    icon: "mdi-yahoo",
-                    name: "Yahoo!",
-                    link: "https://www.yahoo.co.jp",
-                },{
                     icon: "mdi-twitter",
                     name: "Twitter",
                     link: "https://www.twitter.com",
                 },{
-                    icon: "mdi-github",
-                    name: "Github",
-                    link: "https://www.github.com",
+                    icon: "mdi-instagram",
+                    name: "Instagram",
+                    link: "https://www.instagram.com",
+                },{
+                    icon: "mdi-facebook",
+                    name: "Facebook",
+                    link: "https://www.facebook.com",
                 }],
             }
         }

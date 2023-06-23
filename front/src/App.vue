@@ -288,20 +288,29 @@ export default {
       }
     },
     async callApiAnalyze() {
-      const res = await axios.get("/api/analyze/" + this.taskId)
-      return res.data
+      try {
+        const res = await axios.get("/api/analyze/" + this.taskId)
+        return res.data
+      } catch (e) {
+        alert("エラーが発生しました。ページをリロードします。")
+        location.reload()
+      }
     },
 
     // ステータスがSUCCESSになるまでAPIを叩く
     async pollAPIAnalyze() {
       const timeId = setInterval(async () => {
-        const res = await this.callApiAnalyze()
-        if (res.status == "SUCCESS") {
-          this.handleSuccessResponse(res)
+        try {
+          const res = await this.callApiAnalyze()
+          if (res.status == "SUCCESS") {
+            this.handleSuccessResponse(res)
+            clearInterval(timeId)
+            this.buttonRestricted = true;
+          } else if (res.status == "PENDING") {
+            console.log("PENDINGなので定期的にAPI叩きます")
+          }
+        } catch (e) {
           clearInterval(timeId)
-          this.buttonRestricted = true;
-        } else if (res.status == "PENDING") {
-          console.log("PENDINGなので定期的にAPI叩きます")
         }
       }, 1500);
     },

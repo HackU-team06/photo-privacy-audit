@@ -164,7 +164,7 @@
         </div>
         <img class="download_img">
       </div>
-    </v->
+    </v-main>
     <v-footer height="auto" class="custom-footer">
       <div class="footer-content">
         <span>&copy; 2023 NemuNemu-Potato-Friends</span>

@@ -42,18 +42,18 @@ class GcvaAnalyze(BackgroundAnalyzeProcessBase):
         # print(output_text)
 
         # レスポンスからテキストの位置座標を抽出(GCVA)
-        output = []
+        result_list = []
         for texts in response.text_annotations[1:]:
             vertices = [(vertex.x, vertex.y) for vertex in texts.bounding_poly.vertices]
             x1 = min(vertices[0][0], vertices[3][0])
             y1 = min(vertices[0][1], vertices[1][1])
             x2 = max(vertices[1][0], vertices[2][0])
             y2 = max(vertices[2][1], vertices[3][1])
-            output.append(
+            result_list.append(
                 AnalyzeResult(
                     bounding_box={"x": x1, "y": y1, "w": x2 - x1, "h": y2 - y1},
                     name="letter",
                     description="letter",
                 )
             )
-        return output
+        return result_list

@@ -4,9 +4,10 @@ services:
     build:
       context: ./app
       dockerfile: app.dockerfile
+    image: hacku-tema6-app-image
 
   api:
-    image: app-image
+    image: hacku-tema6-app-image
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - worker
@@ -22,7 +23,7 @@ services:
       - upload_tmp:/app/upload
 
   worker:
-    image: app-image
+    image: hacku-tema6-app-image
     depends_on:
       - redis
     command: celery --app=tasks.celery worker --loglevel=info
@@ -34,7 +35,7 @@ services:
       - upload_tmp:/app/upload
 
   dashboard:
-    image: app-image
+    image: hacku-tema6-app-image
     depends_on:
       - redis
       - worker

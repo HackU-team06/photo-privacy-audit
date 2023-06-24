@@ -435,9 +435,15 @@ export default {
       this.$refs.fileInput.click();
     },
     selectColor(rate){
-      if(rate == 2) return 'red'
-      else if(rate == 1) return 'orange'
-      else return 'yellow'
+      if (rate >= 3) {
+        return 'red'
+      } else if (rate >= 2) {
+        return 'orange'
+      } else if (rate >= 1) {
+        return 'yellow'
+      } else {
+        return 'white'
+      }
     },
     //det_objectsの重複を削除(explain用)
     duplicationCheck(){

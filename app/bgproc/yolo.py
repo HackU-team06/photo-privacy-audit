@@ -26,7 +26,7 @@ class YoloAnalyze(BackgroundAnalyzeProcessBase):
                 continue
             name = names[int(cls_idx)].replace("_", " ")
             x1, y1, x2, y2 = (int(i) for i in box.xyxy[0])
-            x, y, w, h = x1, y1, x1+x2, y1+y2
+            x, y, w, h = x1, y1, x2-x1, y2-y1
             conf = float(box.conf)
             result_list.append(AnalyzeResult(
                 bounding_box={"x": x, "y": y, "w": w, "h": h},

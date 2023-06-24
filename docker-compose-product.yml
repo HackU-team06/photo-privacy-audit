@@ -1,9 +1,12 @@
 version: '3'
 services:
-  server:
+  app-image:
     build:
       context: ./app
       dockerfile: app.dockerfile
+  
+  api:
+    image: app-image
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     depends_on:
       - worker
@@ -15,9 +18,7 @@ services:
       - upload_tmp:/app/upload
 
   worker:
-    build:
-      context: ./app
-      dockerfile: app.dockerfile
+    image: app-image
     depends_on:
       - redis
     command: celery --app=tasks.celery worker --loglevel=info
@@ -27,9 +28,7 @@ services:
       - upload_tmp:/app/upload
 
   dashboard:
-    build:
-      context: ./app
-      dockerfile: app.dockerfile
+    image: app-image
     depends_on:
       - redis
       - worker
@@ -51,7 +50,6 @@ services:
     volumes:
       - front_dist:/usr/share/nginx/html
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-
 
   redis:
     image: redis:latest

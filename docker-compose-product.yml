@@ -45,7 +45,7 @@ services:
     ports:
       - 8000:80
     depends_on:
-      - server
+      - api
       - front
     volumes:
       - front_dist:/usr/share/nginx/html
